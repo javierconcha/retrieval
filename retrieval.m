@@ -164,14 +164,14 @@ LUT2 = LUT2';
 
 %% 
 disp('--------------------------------------------------------------------------')
-disp('Running Optimization Routine for TestSamples w/o Noise neither Quantization')
+disp('Running Optimization Routine')
     XResults = opt(waterpixels,LUT1,LUTconc);
-disp('Optimization Routine for TestSamples w/o Noise neither Quantization finished Successfully')
+disp('Optimization Routine finished Successfully')
 %% Test the optimization algorhythm
 disp('--------------------------------------------------------------------------')
-disp('Running Optimization Routine for TestSamples w/o Noise neither Quantization')
+disp('Running Optimization Routine')
     XResultstest = opt(LUT1,LUT1,LUTconc);
-disp('Optimization Routine for TestSamples w/o Noise neither Quantization finished Successfully')
+disp('Optimization Routine finished Successfully')
 %% E_RMS
 E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1))
 E_Chl*100/68

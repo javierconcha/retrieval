@@ -45,7 +45,8 @@ if x0(3)==14, x0(3)=12; end
 
     
 end
-toc
+disp('Elapsed time is (min):')
+disp(toc/60)
   
   matlabpool close
 % close(h)

@@ -1,4 +1,5 @@
 cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
+addpath
 %% L5 image
 im0115 = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled.tif');
 im0115mask = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled_masktif.tif');
@@ -13,25 +14,26 @@ im0115RGB(:,:,3)=im0115(:,:,1)/max(max(max(im0115(:,:,1))));
 minRGB = double(min(min(min(im0115RGB))));
 maxRGB = double(max(max(max(im0115RGB))));
 
+impos = double(im0115RGB);% only positive values
+impos(impos<0)=0;
 
-im = double(im0115RGB);
-im(im<0)=0;
 maskRGB(:,:,1)=double(im0115mask);
 maskRGB(:,:,2)=double(im0115mask);
 maskRGB(:,:,3)=double(im0115mask);
 
-im = im.*maskRGB;
-im(:,:,1) = imadjust(im(:,:,1));
-im(:,:,2) = imadjust(im(:,:,2));
-im(:,:,3) = imadjust(im(:,:,3));
+impos = impos.*maskRGB;
+impos(:,:,1) = imadjust(impos(:,:,1));
+impos(:,:,2) = imadjust(impos(:,:,2));
+impos(:,:,3) = imadjust(impos(:,:,3));
 
 
 figure
-imshow(im)
+imshow(impos)
 
 %% mask
 figure
 imshow(imadjust(im0115mask))
+
 %%
 L5bands = [0.485,0.560,0.660,0.830,1.650,2.220];
 
@@ -40,6 +42,58 @@ masknew = reshape(im0115mask,[size(im0115mask,1)*size(im0115mask,2) size(im0115m
 
 waterpixels = imnew(masknew==1,:);
 waterpixels = double(waterpixels);
+%% negative values
+im = double(im0115);% only positive negatives
+imneg = zeros(size(im0115));
+imneg(im<0)=1;
+imneg(im>=0)=0;
+imneg = imneg+0.5*repmat(~double(im0115mask),[1 1 size(im0115,3)]);
+
+figure
+subplot(2,3,1)
+fs = 15;
+set(gcf,'color','white')
+imshow(imneg(:,:,1))
+title('band 1','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,3,2)
+fs = 15;
+set(gcf,'color','white')
+imshow(imneg(:,:,2))
+title('band 2','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,3,3)
+fs = 15;
+set(gcf,'color','white')
+imshow(imneg(:,:,3))
+title('band 3','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,3,4)
+fs = 15;
+set(gcf,'color','white')
+imshow(imneg(:,:,4))
+title('band 4','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,3,5)
+fs = 15;
+set(gcf,'color','white')
+imshow(imneg(:,:,5))
+title('band 5','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,3,6)
+fs = 15;
+set(gcf,'color','white')
+imshow(imneg(:,:,6))
+title('band 7','fontsize',fs)
+set(gca,'fontsize',fs)
+
+p=mtit('Negative Values',...
+ 	     'fontsize',fs+1,'xoff',0,'yoff',.025);
 %% Stats water pixels
 % % meanwp = mean(waterpixels,1);
 % % stdwp = std(waterpixels,1);
@@ -222,8 +276,6 @@ imagesc(CDOMmap)
 title('CDOM map','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar
-
-%making a change
 
 %% Comparison between two LUTs from Aaron and one curve from HL5.1 in tropos
 

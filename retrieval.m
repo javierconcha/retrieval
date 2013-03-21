@@ -1,5 +1,5 @@
 cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
-addpath
+
 %% L5 image
 im0115 = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled.tif');
 im0115mask = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled_masktif.tif');

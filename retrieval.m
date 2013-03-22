@@ -131,7 +131,7 @@ set(gca,'fontsize',fs)
 LUT1temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT.txt');
 LUT2temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT1.txt');
 LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUTConc.txt');
-LUTconc = LUTconc';
+LUTconc = LUTconc';%ex: 1000x3
 
 wl120 = LUT1temp(:,1);
 wl140 = LUT2temp(:,1);
@@ -140,18 +140,21 @@ clear LUT1temp LUT2temp
 
 LUT1 = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT1speclyb.txt');
 LUT2 = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT2speclyb.txt');
-LUT1 = LUT1';
-LUT2 = LUT2';
+LUT1 = LUT1';% ex: 1000x6
+LUT2 = LUT2';% ex: 1000x6
 
+rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTjavierL5.txt');
+LUT3 = rr(:,2:end)';
+LUTconc3 = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list.txt');
 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(L5bands,LUT1)
-% % title('Reflectance LUT1 - HydroLight','fontsize',fs)
-% % xlabel('wavelength [\mu m]','fontsize',fs)
-% % ylabel('reflectance','fontsize',fs)
-% % set(gca,'fontsize',fs)
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L5bands,LUT3)
+title('Reflectance LUT1 - HydroLight','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
 % % 
 % % figure
 % % fs = 15;
@@ -166,6 +169,11 @@ LUT2 = LUT2';
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
     XResults = opt(waterpixels,LUT1,LUTconc);
+disp('Optimization Routine finished Successfully')
+%% Test the optimization algorhythm
+disp('--------------------------------------------------------------------------')
+disp('Running Optimization Routine')
+    XResultstest = opt(LUT3,LUT3,LUTconc3);
 disp('Optimization Routine finished Successfully')
 %% Test the optimization algorhythm
 disp('--------------------------------------------------------------------------')

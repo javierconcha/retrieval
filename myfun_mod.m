@@ -1,21 +1,24 @@
-function f = myfun_mod(x0,X1,X2,X3,Ys,Yn)
+function f = myfun_mod(x0,f1,f2,f3,LUT,Ytest)
 % x0: starting point
-% X1,X2,X3=f1,f2,f3: Grid for the LUT
-% Ys: LUT
-% Yn: one TestSamples curve with unknown concentration
+% f1,f2,f3: Grid for the LUT
+
 global F
 global visual
 global visual2
+
 xi = x0(1); % Starting Point
 yi = x0(2);
 zi = x0(3);
-x = X1;
-y = X2;
-z = X3;
-xx = squeeze(X3(1,1,:)); yy = X1(1,:,1).'; zz = X2(:,1,1);
+x = f1;
+y = f2;
+z = f3;
+xx = squeeze(f3(1,1,:));    % CHL concentration
+yy = f1(1,:,1).';           % SM concentration
+zz = f2(:,1,1);             % CDOM concentration
+
 % Determine the nearest location of xi in x
-[xxi,j] = sort(xi(:));
-[ignore,i] = sort([xx;xxi]);
+[xxi,j] = sort(xi(:)); % Does xi have more than one dim???!!!!
+[~,i] = sort([xx;xxi]);
 si(i) = (1:length(i));
 si = (si(length(xx)+1:end)-(1:length(xxi)))';
 si(j) = si;
@@ -27,7 +30,7 @@ si = si + (xi(:)-xx(si))./(xx(si+1)-xx(si));
 
 % Determine the nearest location of yi in y
 [yyi,j] = sort(yi(:));
-[ignore,i] = sort([yy;yyi]);
+[~,i] = sort([yy;yyi]);
 ti(i) = (1:length(i));
 ti = (ti(length(yy)+1:end)-(1:length(yyi)))';
 ti(j) = ti;
@@ -39,7 +42,7 @@ ti = ti + (yi(:)-yy(ti))./(yy(ti+1)-yy(ti));
 
 % Determine the nearest location of zi in z
 [zzi,j] = sort(zi(:));
-[ignore,i] = sort([zz;zzi]);
+[~,i] = sort([zz;zzi]);
 wi(i) = (1:length(i));
 wi = (wi(length(zz)+1:end)-(1:length(zzi)))';
 wi(j) = wi;
@@ -53,19 +56,13 @@ wi = wi + (zi(:)-zz(wi))./(zz(wi+1)-zz(wi));
     ones(superiorfloat(y,z)):size(y,1),1:size(z,3));
 xi(:) = si; yi(:) = ti; zi(:) = wi;
 
-arg1 = x;
-arg2 = y;
-arg3 = z;
-arg5 = xi;
-arg6 = yi;
-arg7 = zi;
-nrows = size(X1,1);
-ncols = size(X1,2);
-npages = size(X1,3);
-mx = numel(arg1); my = numel(arg2); mz = numel(arg3);
-s = 1 + (arg5-arg1(1))/(arg1(mx)-arg1(1))*(ncols-1);
-t = 1 + (arg6-arg2(1))/(arg2(my)-arg2(1))*(nrows-1);
-w = 1 + (arg7-arg3(1))/(arg3(mz)-arg3(1))*(npages-1);
+nrows = size(f1,1);
+ncols = size(f1,2);
+npages = size(f1,3);
+mx = numel(x); my = numel(y); mz = numel(z);
+s = 1 + (xi-x(1))/(x(mx)-x(1))*(ncols-1);
+t = 1 + (yi-y(1))/(y(my)-y(1))*(nrows-1);
+w = 1 + (zi-z(1))/(z(mz)-z(1))*(npages-1);
 
 % Check for out of range values of s and set to 1
 sout = find((s<1)|(s>ncols));
@@ -97,28 +94,32 @@ if ~isempty(d), t(d) = t(d)+1; ndx(d) = ndx(d)-1; end
 if isempty(w), d = w; else d = find(w==npages); end
 w(:) = (w - floor(w));
 if ~isempty(d), w(d) = w(d)+1; ndx(d) = ndx(d)-nw; end
-arg4 = Ys;
-% F =  (( arg4(:,:,ndx).*(1-t) + arg4(:,:,ndx+1).*t ).*(1-s) + ...
-%         ( arg4(:,:,ndx+nrows).*(1-t) + arg4(:,:,ndx+(nrows+1)).*t ).*s).*(1-w) +...
-%        (( arg4(:,:,ndx+nw).*(1-t) + arg4(:,:,ndx+1+nw).*t ).*(1-s) + ...
-%         ( arg4(:,:,ndx+nrows+nw).*(1-t) + arg4(:,:,ndx+(nrows+1+nw)).*t ).*s).*w;
-% F =  (( arg4(:,ndx).*(1-t) + arg4(:,ndx+1).*t ).*(1-s) + ...
-%         ( arg4(:,ndx+nrows).*(1-t) + arg4(:,ndx+(nrows+1)).*t ).*s).*(1-w) +...
-%        (( arg4(:,ndx+nw).*(1-t) + arg4(:,ndx+1+nw).*t ).*(1-s) + ...
-%         ( arg4(:,ndx+nrows+nw).*(1-t) + arg4(:,ndx+(nrows+1+nw)).*t ).*s).*w;
-F =  (( arg4(ndx,:).*(1-w) + arg4(ndx+1,:).*w ).*(1-t) + ...
-        ( arg4(ndx+nrows,:).*(1-w) + arg4(ndx+(nrows+1),:).*w ).*t).*(1-s) +...
-       (( arg4(ndx+nw,:).*(1-w) + arg4(ndx+1+nw,:).*w ).*(1-t) + ...
-        ( arg4(ndx+nrows+nw,:).*(1-w) + arg4(ndx+(nrows+1+nw),:).*w ).*t).*s;
-f = Yn-F;
+
+% size(LUT)
+% ndx
+% ndx+1
+% ndx+nrows
+% ndx+(nrows+1)
+% ndx+nw
+% ndx+1+nw
+% ndx+nrows+nw
+% ndx+(nrows+1+nw)
+
+F =  (( LUT(ndx,:).*(1-w) + LUT(ndx+1,:).*w ).*(1-t) + ...
+        ( LUT(ndx+nrows,:).*(1-w) + LUT(ndx+(nrows+1),:).*w ).*t).*(1-s) +...
+       (( LUT(ndx+nw,:).*(1-w) + LUT(ndx+1+nw,:).*w ).*(1-t) + ...
+        ( LUT(ndx+nrows+nw,:).*(1-w) + LUT(ndx+(nrows+1+nw),:).*w ).*t).*s;
+f = Ytest-F;
 
 if visual
     figure(68)
-    plot(Yn,'r')
+    ylim([0 0.05])
+    plot(Ytest,'r')
     hold on
-    plot(F)
-%     pause(0.01)
+    plot(F,'b')
+    pause(0.01)
     plot(F,'g','linewidth',1)
+    
     
 
 end
@@ -127,7 +128,10 @@ if visual2
     
     figure(69)
     hold on
+    plot3(x0(1),x0(2),x0(3),'r*')
+    pause(0.01)
     plot3(x0(1),x0(2),x0(3),'*')
+    view(3)
 end
 
 f = f(:);

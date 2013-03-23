@@ -6,55 +6,49 @@ global F
 global visual
 global visual2
 
-xi = x0(1); % Starting Point
-yi = x0(2);
-zi = x0(3);
-x = f1;
-y = f2;
-z = f3;
-xx = squeeze(f3(1,1,:));    % CHL concentration
-yy = f1(1,:,1).';           % SM concentration
-zz = f2(:,1,1);             % CDOM concentration
+% Starting Point
+xi = x0(1); % CHL
+yi = x0(2); % SM
+zi = x0(3); % CDOM
 
-% Determine the nearest location of xi in x
-[xxi,j] = sort(xi(:)); % Does xi have more than one dim???!!!!
-[~,i] = sort([xx;xxi]);
+xx = squeeze(f3(1,1,:));    % CHL concentrations
+yy = f1(1,:,1).';           % SM concentrations
+zz = f2(:,1,1);             % CDOM concentrations
+
+% Determine the nearest location of xi in f1
+[~,i] = sort([xx;xi]);
 si(i) = (1:length(i));
-si = (si(length(xx)+1:end)-(1:length(xxi)))';
-si(j) = si;
+si = (si(length(xx)+1:end)-1)';
 
 % Map values in xi to index offset (si) via linear interpolation
 si(si<1) = 1;
 si(si>length(xx)-1) = length(xx)-1;
-si = si + (xi(:)-xx(si))./(xx(si+1)-xx(si));
+si = si + (xi-xx(si))./(xx(si+1)-xx(si));
 
-% Determine the nearest location of yi in y
-[yyi,j] = sort(yi(:));
-[~,i] = sort([yy;yyi]);
+% Determine the nearest location of yi in f2
+[~,i] = sort([yy;yi]);
 ti(i) = (1:length(i));
-ti = (ti(length(yy)+1:end)-(1:length(yyi)))';
-ti(j) = ti;
+ti = (ti(length(yy)+1:end)-1)';
 
 % Map values in yi to index offset (ti) via linear interpolation
 ti(ti<1) = 1;
 ti(ti>length(yy)-1) = length(yy)-1;
-ti = ti + (yi(:)-yy(ti))./(yy(ti+1)-yy(ti));
+ti = ti + (yi-yy(ti))./(yy(ti+1)-yy(ti));
 
-% Determine the nearest location of zi in z
-[zzi,j] = sort(zi(:));
-[~,i] = sort([zz;zzi]);
+% Determine the nearest location of zi in f3
+[~,i] = sort([zz;zi]);
 wi(i) = (1:length(i));
-wi = (wi(length(zz)+1:end)-(1:length(zzi)))';
-wi(j) = wi;
+wi = (wi(length(zz)+1:end)-1)';
 
 % Map values in zi to index offset (wi) via linear interpolation
 wi(wi<1) = 1;
 wi(wi>length(zz)-1) = length(zz)-1;
-wi = wi + (zi(:)-zz(wi))./(zz(wi+1)-zz(wi));
+wi = wi + (zi-zz(wi))./(zz(wi+1)-zz(wi));
 
-[x,y,z] = meshgrid(ones(class(x)):size(x,2),...
-    ones(superiorfloat(y,z)):size(y,1),1:size(z,3));
-xi(:) = si; yi(:) = ti; zi(:) = wi;
+[x,y,z] = meshgrid(ones(class(f1)):size(f1,2),...
+    ones(superiorfloat(f2,f3)):size(f2,1),1:size(f3,3)); % grid of values 1 to 10
+
+xi = si; yi = ti; zi = wi; % xi,si,ti are integers
 
 nrows = size(f1,1);
 ncols = size(f1,2);

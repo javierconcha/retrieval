@@ -105,28 +105,28 @@ F =  (( LUT(ndx,:).*(1-w) + LUT(ndx+1,:).*w ).*(1-t) + ...
         ( LUT(ndx+nrows+nw,:).*(1-w) + LUT(ndx+(nrows+1+nw),:).*w ).*t).*s;
 f = Ytest-F;
 
-if visual
-    figure(68)
-    ylim([0 0.05])
-    plot(Ytest,'r')
-    hold on
-    plot(F,'b')
-    pause(0.01)
-    plot(F,'g','linewidth',1)
-    
-    
-
-end
-
-if visual2
-    
-    figure(69)
-    hold on
-    plot3(x0(1),x0(2),x0(3),'r*')
-    pause(0.01)
-    plot3(x0(1),x0(2),x0(3),'*')
-    view(3)
-end
+% if visual
+%     figure(68)
+%     ylim([0 0.05])
+%     plot(Ytest,'r')
+%     hold on
+%     plot(F,'b')
+%     pause(0.01)
+%     plot(F,'g','linewidth',1)
+%     
+%     
+% 
+% end
+% 
+% if visual2
+%     
+%     figure(69)
+%     hold on
+%     plot3(x0(1),x0(2),x0(3),'r*')
+%     pause(0.01)
+%     plot3(x0(1),x0(2),x0(3),'*')
+%     view(3)
+% end
 
 f = f(:);
 % imagesc(F)

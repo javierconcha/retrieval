@@ -14,8 +14,8 @@ im0115RGB(:,:,3)=im0115(:,:,1)/max(max(max(im0115(:,:,1))));
 minRGB = double(min(min(min(im0115RGB))));
 maxRGB = double(max(max(max(im0115RGB))));
 
-impos = double(im0115RGB);% only positive values
-impos(impos<0)=0;
+impos = double(im0115RGB);
+% impos(impos<0)=0;% only positive values
 
 maskRGB(:,:,1)=double(im0115mask);
 maskRGB(:,:,2)=double(im0115mask);
@@ -126,12 +126,25 @@ title('Reflectance water L5 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
+% ylim([0 0.2])
+%% 
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L5bands,waterpixels')
+title('Reflectance water L5 image','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.2])
 
 %% LUTs from Aaron
 LUT1temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT.txt');
 LUT2temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT1.txt');
 LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUTConc.txt');
 LUTconc = LUTconc';%ex: 1000x3
+
 
 wl120 = LUT1temp(:,1);
 wl140 = LUT2temp(:,1);
@@ -147,11 +160,14 @@ rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTjavierL5.txt');
 LUT3 = rr(:,2:end)';
 LUTconc3 = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list.txt');
 
+LUT1000 = LUT3(LUTconc(:,2)<=24,:);
+LUT1000conc = LUTconc(LUTconc(:,2)<=24,:);
+
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L5bands,LUT3)
-title('Reflectance LUT1 - HydroLight','fontsize',fs)
+plot(L5bands,LUT1000)
+title('Reflectance LUT1000 - HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
@@ -168,17 +184,17 @@ set(gca,'fontsize',fs)
 %% 
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    XResults = opt(waterpixels,LUT1,LUTconc);
+    XResults = opt(waterpixels,LUT1000,LUTconc);
 disp('Optimization Routine finished Successfully')
 %% Test the optimization algorhythm
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    XResultstest = opt(LUT3,LUT3,LUTconc3);
+    XResultstest = opt(LUT2,LUT2,LUTconc);
 disp('Optimization Routine finished Successfully')
 %% Test the optimization algorhythm
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    XResultstest = opt(LUT1,LUT1,LUTconc);
+    XResultstest = opt(LUT1000,LUT1000,LUTconc);
 disp('Optimization Routine finished Successfully')
 %% E_RMS
 E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1))
@@ -291,8 +307,8 @@ r_02502514 = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/r_025025014
 figure
 plot(LUT1(10,:))
 hold on
-plot(LUT2(10,:),'k')
-plot(r_02502514(:,2),'r')
+plot(LUT1000(10,:),'k')
+% plot(r_02502514(:,2),'r')
 
 
 

@@ -6,8 +6,8 @@ format long;
 % Ytest: water pixels reflectance from the image; Dim: 2000x8
 % LUT: LUT
 
-global visual
-global visual2
+% global visual
+% global visual2
 %% Reading in the LUT
 Y = LUT;
 
@@ -18,30 +18,28 @@ CHLconc  = unique(LUTconc(:,1))';
 [f2,f1,f3] = ndgrid(CDOMconc,SMconc,CHLconc); % CDOM SM CHL
 options = optimset('Display','off','Tolfun',1e-10);
 
-% matlabpool open 4 % for using paralel computing
+matlabpool open 4 % for using paralel computing
 
 XResults=zeros(size(Ytest,1),3);
 %%
 tic
-for i = 1:size(Ytest,1)
+parfor i = 1:size(Ytest,1)
     
-    if visual==1
-    i
-    figure(68)
-    clf
-    ylim([0 0.05])
-    end 
+%     if visual==1
+%     i
+%     figure(68)
+%     clf
+%     ylim([0 0.05])
+%     end 
+%     
+%     if visual2==1
+%     figure(69)
+%     xlim([0 68])
+%     ylim([0 24])
+%     zlim([0 14])
+%     end
     
-    if visual2==1
-    figure(69)
-    xlim([0 68])
-    ylim([0 24])
-    zlim([0 14])
-    end
-    
-    if i==20 
-    disp('i is equal to 20')
-    end;
+
     % select x0
     a=sum((Y-repmat(Ytest(i,:),size(Y,1),1)).^2,2);
     [~,index]=min(a);
@@ -64,4 +62,4 @@ end
 disp('Elapsed time is (min):')
 disp(toc/60)
 
-% matlabpool close % for using paralel computing
+matlabpool close % for using paralel computing

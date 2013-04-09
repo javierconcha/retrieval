@@ -1,99 +1,142 @@
 cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
-
 %% L5 image
-im0115 = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled.tif');
-im0115mask = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled_masktif.tif');
-im0115mask(im0115mask>0)=1;
+im0115big = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02.tif');
+im0115bigmask = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02watermask.tif');
+im0115bigmask(im0115bigmask>0)=1;
 
-format long;
+L5bands = [0.485,0.560,0.660,0.830,1.650,2.220];
 %% for displaying
-im0115RGB(:,:,1)=im0115(:,:,3)/max(max(max(im0115(:,:,3))));% normalize for maximum
-im0115RGB(:,:,2)=im0115(:,:,2)/max(max(max(im0115(:,:,2))));
-im0115RGB(:,:,3)=im0115(:,:,1)/max(max(max(im0115(:,:,1))));
+im0115RGB(:,:,1)=imadjust(im0115big(:,:,3));%/max(max(max(im0115big(:,:,3))));% normalize for maximum
+im0115RGB(:,:,2)=imadjust(im0115big(:,:,2));%/max(max(max(im0115big(:,:,2))));
+im0115RGB(:,:,3)=imadjust(im0115big(:,:,1));%/max(max(max(im0115big(:,:,1))));
 
-minRGB = double(min(min(min(im0115RGB))));
-maxRGB = double(max(max(max(im0115RGB))));
+figure
+imagesc(im0115RGB,[2 100])
+axis equal
 
-impos = double(im0115RGB);
+figure
+imagesc(im0115bigmask)
+colormap(gray)
+axis equal
+
+%% L5 water pixels 
+imnew = reshape(im0115big,[size(im0115big,1)*size(im0115big,2) size(im0115big,3)]);
+masknew = reshape(im0115bigmask,[size(im0115bigmask,1)*size(im0115bigmask,2) size(im0115bigmask,3)]);
+
+waterpixelsL5 = imnew(masknew==1,:);
+waterpixelsL5 = double(waterpixelsL5);
+
+%% display All water pixels
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L5bands,waterpixelsL5(1:1000000,:))
+title('Reflectance water L5 image','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('radiance [W/m^2/sr/um]','fontsize',fs)
+set(gca,'fontsize',fs)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% L5 image cropped
+% im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled.tif');
+im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ON130408resampledtif.tif');
+
+
+im0115cropmask = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled_masktif.tif');
+im0115cropmask(im0115cropmask>0)=1;
+
+%% for displaying
+im0115cropRGB(:,:,1)=imadjust(im0115crop(:,:,3));
+im0115cropRGB(:,:,2)=imadjust(im0115crop(:,:,2));
+im0115cropRGB(:,:,3)=imadjust(im0115crop(:,:,1));
+
+
+impos = double(im0115cropRGB);
 % impos(impos<0)=0;% only positive values
 
-maskRGB(:,:,1)=double(im0115mask);
-maskRGB(:,:,2)=double(im0115mask);
-maskRGB(:,:,3)=double(im0115mask);
+maskRGB(:,:,1)=double(im0115cropmask);
+maskRGB(:,:,2)=double(im0115cropmask);
+maskRGB(:,:,3)=double(im0115cropmask);
 
 impos = impos.*maskRGB;
-impos(:,:,1) = imadjust(impos(:,:,1));
-impos(:,:,2) = imadjust(impos(:,:,2));
-impos(:,:,3) = imadjust(impos(:,:,3));
 
 
 figure
-imshow(impos)
+imagesc(impos)
+axis equal
 
 %% mask
 figure
-imshow(imadjust(im0115mask))
+imshow(imadjust(im0115cropmask))
 
-%%
-L5bands = [0.485,0.560,0.660,0.830,1.650,2.220];
+%% water pixels. Convert each band in columns.
 
-imnew = reshape(im0115,[size(im0115,1)*size(im0115,2) size(im0115,3)]);
-masknew = reshape(im0115mask,[size(im0115mask,1)*size(im0115mask,2) size(im0115mask,3)]);
+imnew = reshape(im0115crop,[size(im0115crop,1)*size(im0115crop,2) size(im0115crop,3)]);
+masknew = reshape(im0115cropmask,[size(im0115cropmask,1)*size(im0115cropmask,2) size(im0115cropmask,3)]);
 
 waterpixels = imnew(masknew==1,:);
 waterpixels = double(waterpixels);
 %% negative values
-im = double(im0115);% only positive negatives
-imneg = zeros(size(im0115));
-imneg(im<0)=1;
-imneg(im>=0)=0;
-imneg = imneg+0.5*repmat(~double(im0115mask),[1 1 size(im0115,3)]);
+im = double(im0115crop);
+imneg = zeros(size(im));
+imneg(im<0)=im(im<0);% only negatives
+
+imnegmask = zeros(size(im0115crop));% for displaying
+imnegmask(im<0)=1;
+imnegmask(im>=0)=0;
+imnegmask = imnegmask+0.5*repmat(~double(im0115cropmask),[1 1 size(im0115crop,3)]); % for the land appear gray
 
 figure
 subplot(2,3,1)
 fs = 15;
 set(gcf,'color','white')
-imshow(imneg(:,:,1))
+imshow(imnegmask(:,:,1))
 title('band 1','fontsize',fs)
 set(gca,'fontsize',fs)
 
 subplot(2,3,2)
 fs = 15;
 set(gcf,'color','white')
-imshow(imneg(:,:,2))
+imshow(imnegmask(:,:,2))
 title('band 2','fontsize',fs)
 set(gca,'fontsize',fs)
 
 subplot(2,3,3)
 fs = 15;
 set(gcf,'color','white')
-imshow(imneg(:,:,3))
+imshow(imnegmask(:,:,3))
 title('band 3','fontsize',fs)
 set(gca,'fontsize',fs)
 
 subplot(2,3,4)
 fs = 15;
 set(gcf,'color','white')
-imshow(imneg(:,:,4))
+imshow(imnegmask(:,:,4))
 title('band 4','fontsize',fs)
 set(gca,'fontsize',fs)
 
 subplot(2,3,5)
 fs = 15;
 set(gcf,'color','white')
-imshow(imneg(:,:,5))
+imshow(imnegmask(:,:,5))
 title('band 5','fontsize',fs)
 set(gca,'fontsize',fs)
 
 subplot(2,3,6)
 fs = 15;
 set(gcf,'color','white')
-imshow(imneg(:,:,6))
+imshow(imnegmask(:,:,6))
 title('band 7','fontsize',fs)
 set(gca,'fontsize',fs)
 
 p=mtit('Negative Values',...
  	     'fontsize',fs+1,'xoff',0,'yoff',.025);
+     
+imnegb7 = imneg(:,:,6);  % to see negative values stats
+mean(imnegb7(:))
+std(imnegb7(:))
 %% Stats water pixels
 % % meanwp = mean(waterpixels,1);
 % % stdwp = std(waterpixels,1);
@@ -127,12 +170,13 @@ xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.2])
-%% 
+%% Display negative values
+waterpixels_neg = waterpixels(waterpixels(:,6)<0,:);
 
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L5bands,waterpixels')
+plot(L5bands,waterpixels_neg')
 title('Reflectance water L5 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
@@ -273,9 +317,9 @@ legend('real','retrieved')
 ConcRet = zeros(size(masknew),3);
 ConcRet(masknew==1,:) = XResults; % Concentration Retrieved
 
-CHLmap  = reshape(ConcRet(:,1),[size(im0115mask,1) size(im0115mask,2) size(im0115mask,3)]);
-SMmap   = reshape(ConcRet(:,2),[size(im0115mask,1) size(im0115mask,2) size(im0115mask,3)]);
-CDOMmap = reshape(ConcRet(:,3),[size(im0115mask,1) size(im0115mask,2) size(im0115mask,3)]);
+CHLmap  = reshape(ConcRet(:,1),[size(im0115cropmask,1) size(im0115cropmask,2) size(im0115cropmask,3)]);
+SMmap   = reshape(ConcRet(:,2),[size(im0115cropmask,1) size(im0115cropmask,2) size(im0115cropmask,3)]);
+CDOMmap = reshape(ConcRet(:,3),[size(im0115cropmask,1) size(im0115cropmask,2) size(im0115cropmask,3)]);
 
 figure
 fs = 15;

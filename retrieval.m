@@ -26,22 +26,23 @@ masknew = reshape(im0115bigmask,[size(im0115bigmask,1)*size(im0115bigmask,2) siz
 waterpixelsL5 = imnew(masknew==1,:);
 waterpixelsL5 = double(waterpixelsL5);
 
-%% display All water pixels
-
-figure
-fs = 15;
-set(gcf,'color','white')
-plot(L5bands,waterpixelsL5(1:1000000,:))
-title('Reflectance water L5 image','fontsize',fs)
-xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('radiance [W/m^2/sr/um]','fontsize',fs)
-set(gca,'fontsize',fs)
+% %% display All water pixels
+% 
+% figure
+% fs = 15;
+% set(gcf,'color','white')
+% plot(L5bands,waterpixelsL5(1:1000000,:))
+% title('Reflectance water L5 image','fontsize',fs)
+% xlabel('wavelength [\mu m]','fontsize',fs)
+% ylabel('radiance [W/m^2/sr/um]','fontsize',fs)
+% set(gca,'fontsize',fs)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% L5 image cropped
 % im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled.tif');
 im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ON130408resampledtif.tif');
+
 
 
 im0115cropmask = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled_masktif.tif');
@@ -183,6 +184,7 @@ ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.2])
 
+
 %% LUTs from Aaron
 LUT1temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT.txt');
 LUT2temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT1.txt');
@@ -224,6 +226,43 @@ set(gca,'fontsize',fs)
 % % xlabel('wavelength [\mu m]','fontsize',fs)
 % % ylabel('reflectance','fontsize',fs)
 % % set(gca,'fontsize',fs)
+%% Darkest in the red
+% Darkest in red band
+[~,darkestindex] = min(waterpixels(:,3));
+waterdarkestred = waterpixels(darkestindex,:);
+
+[~,LUTdarkestindex] = min(LUT1000(:,3));
+LUTdarkestred = LUT1000(LUTdarkestindex,:);
+LUT1000conc(LUTdarkestindex,:)
+
+% Darkest in Magnitude
+wpnorm = sqrt(sum(waterpixels.^2,2)); % for the waterpixels
+[normmin,index] = min(wpnorm);
+waterpixelspermag = waterpixels(index,:);
+
+LUT1000norm = sqrt(sum(LUT1000.^2,2)); % for the LUT
+[normmin,index] = min(LUT1000norm);
+LUT1000conc(index,:)
+
+
+
+
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L5bands,waterdarkestred')
+hold on
+plot(L5bands,waterpixelspermag','c')
+plot(L5bands,LUTdarkestred','r')
+plot(L5bands,LUT1000(1,:)','k')
+
+legend('L5 per b3','L5 per mag','HL:0.25;0.25;14','HL:0.25;0.25;0.25')
+title('Darkest pixel - L5 vs HL','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.2])
 
 %% 
 disp('--------------------------------------------------------------------------')
@@ -354,6 +393,10 @@ hold on
 plot(LUT1000(10,:),'k')
 % plot(r_02502514(:,2),'r')
 
+%% 
 
+ROImiddlelakemean = [40.575298 20.721369 10.058275 3.807572 0 0];
 
+ROImiddlelakestdv = [0.750423 0.904410 0.590065 0.265090 0 0];
 
+darkpxmiddlelake = ROImiddlelakemean-2*ROImiddlelakestdv;

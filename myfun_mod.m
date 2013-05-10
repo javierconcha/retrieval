@@ -1,21 +1,21 @@
-function f = myfun_mod(x0,f1,f2,f3,LUT,Ytest)
+function f = myfun_mod(x0,f1,f2,f3,LUT,Ytest,LUTconc)
 % It uses tripolar interpolation for monotonic data (uniformly distributed grid) 
 % x0: starting point
 % f1,f2,f3: Grid for the LUT
 
-
+LUTconc(1,:)
 global F
-global visual
-global visual2
+% global visual
+% global visual2
 
 % Starting Point
 xi = x0(1); % CHL
 yi = x0(2); % SM
 zi = x0(3); % CDOM
 
-xx = squeeze(f3(1,1,:));    % CHL concentrations
-yy = f1(1,:,1).';           % SM concentrations
-zz = f2(:,1,1);             % CDOM concentrations
+xx = unique(f3);           % CHL concentrations
+yy = unique(f1);           % SM concentrations
+zz = unique(f2);           % CDOM concentrations
 
 % Determine the nearest location of xi in f1
 [~,i] = sort([xx;xi]);

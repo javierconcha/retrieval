@@ -1,6 +1,6 @@
 % Optimization Routine
 function XResults = opt(Ytest,LUT,LUTconc)
-format long;
+% format long;
 
 % Xtest: water pixels concentration from the image; Dim: 2000x3
 % Ytest: water pixels reflectance from the image; Dim: 2000x8
@@ -24,9 +24,10 @@ XResults=zeros(size(Ytest,1),3);
 %%
 tic
 parfor i = 1:size(Ytest,1)
-    
 %     if visual==1
-%     i
+
+     
+
 %     figure(68)
 %     clf
 %     ylim([0 0.05])
@@ -53,13 +54,16 @@ parfor i = 1:size(Ytest,1)
     % Y: LUT
     % Ytest: TestSamples
     % f1,f2,f3: Grid for the LUT
-    XResults(i,:) = lsqnonlin(@myfun_mod,x0,...
+    XResults(i,:) = lsqnonlin(@MyTrilinearInterp,x0,...
         [min(LUTconc(:,1));min(LUTconc(:,2));min(LUTconc(:,3))],...
         [max(LUTconc(:,1));max(LUTconc(:,2));max(LUTconc(:,3))],...
-        options,f1,f2,f3,Y,Ytest(i,:));
+        options,LUT,Ytest(i,:),LUTconc);
     
 end
 disp('Elapsed time is (min):')
 disp(toc/60)
 
 matlabpool close % for using paralel computing
+beep
+beep
+

@@ -291,7 +291,7 @@ std(imnegb7(:))
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L5bands,waterpixels(waterpixels(:,5)<0.08,:)')
+plot(L5bands,waterpixels')
 title('Reflectance water L5 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
@@ -414,7 +414,7 @@ set(gca,'fontsize',fs)
 %% 
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    XResults = opt(waterpixels(:,1:4),LUT1000(:,1:4),LUT1000conc);
+    XResults = opt(waterpixels(:,1:4),LUT1568(:,1:4),LUT1568conc);
 disp('Optimization Routine finished Successfully')
 %% Test the optimization algorhythm
 disp('--------------------------------------------------------------------------')

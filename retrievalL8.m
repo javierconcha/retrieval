@@ -164,71 +164,62 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% L5 image cropped
-% im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled.tif');
-% im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ON130408resampledtif.tif');
+%% L8 image cropped
 
-%%%% Image with good ELM
-% im0115crop = imread('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ON130417resampledtif.tif');
-% im0115crop = imread(...
-%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302001213LGS01/LT50160302001213LGS01_ONresampled130527tif.tif');
+% imL8crop = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONelm130917resampledtif.tif');
+imL8crop = imread(...
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131119testtif.tif');
 
-im0115crop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000179XXX03/LT50160302000179XXX03_ONresampled130528tif.tif');
+
 
 
 %%%% Mask
-im0115cropmask = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L5images/LT50160302000115AAA02/LT50160302000115AAA02_ONresampled_mask008007tif.tif');
-im0115cropmask(im0115cropmask>0)=1;
-L5bands = [0.485,0.560,0.660,0.830,1.650,2.220];
+% imL8cropmask = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONmaskmin0p5resampled.tif');
+imL8cropmask = imread(...
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131119testWaterMasktif.tif');
+
+
+
+imL8cropmask(imL8cropmask>0)=1;
+
+L8bands = [0.4430,0.4826,0.5613,0.6546,0.8646,1.6090,2.2010];
 
 %%%% water pixels. Convert each band in columns.
 
-imnew = reshape(im0115crop,[size(im0115crop,1)*size(im0115crop,2) size(im0115crop,3)]);
-masknew = reshape(im0115cropmask,[size(im0115cropmask,1)*size(im0115cropmask,2) size(im0115cropmask,3)]);
+imnew = reshape(imL8crop,[size(imL8crop,1)*size(imL8crop,2) size(imL8crop,3)]);
+masknew = reshape(imL8cropmask,[size(imL8cropmask,1)*size(imL8cropmask,2) size(imL8cropmask,3)]);
 
 waterpixels = imnew(masknew==1,:);
 waterpixels = double(waterpixels);
 %% for displaying
-im0115cropRGB(:,:,1)=imadjust(im0115crop(:,:,3));
-im0115cropRGB(:,:,2)=imadjust(im0115crop(:,:,2));
-im0115cropRGB(:,:,3)=imadjust(im0115crop(:,:,1));
+imL8cropRGB(:,:,1)=imadjust(imL8crop(:,:,4));
+imL8cropRGB(:,:,2)=imadjust(imL8crop(:,:,3));
+imL8cropRGB(:,:,3)=imadjust(imL8crop(:,:,2));
 
 
-impos = double(im0115cropRGB);
+impos = double(imL8cropRGB);
 % impos(impos<0)=0;% only positive values
 
-maskRGB(:,:,1)=double(im0115cropmask);
-maskRGB(:,:,2)=double(im0115cropmask);
-maskRGB(:,:,3)=double(im0115cropmask);
+maskRGB(:,:,1)=double(imL8cropmask);
+maskRGB(:,:,2)=double(imL8cropmask);
+maskRGB(:,:,3)=double(imL8cropmask);
 
 impos = impos.*maskRGB;
 
 
 figure
+set(gcf,'color','white')
 imagesc(impos)
 axis equal
 
 %% mask
 figure
-imshow(imadjust(im0115cropmask))
-
-
-%% display All water pixels
-
-figure
-fs = 15;
 set(gcf,'color','white')
-plot(L5bands,waterpixels')
-title('Reflectance water L5 image','fontsize',fs)
-xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
-set(gca,'fontsize',fs)
-% ylim([0 0.18])
- hold on
- plot(L5bands,meanwp+stdwp,'g','linewidth',2)
- 
+imshow(imadjust(imL8cropmask))
+
+
 
 %% Stats water pixels
 meanwp = mean(waterpixels,1);
@@ -240,24 +231,24 @@ minwp = min(waterpixels,[],1);
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L5bands,meanwp,'k')
-title('Reflectance water L5 image','fontsize',fs)
+plot(L8bands,meanwp,'k')
+title('Reflectance water L8 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
 hold on
-plot(L5bands,meanwp+stdwp,'g')
-plot(L5bands,meanwp-stdwp,'g')
-plot(L5bands,maxwp,'r')
-plot(L5bands,minwp,'r')
-xlim([min(L5bands) max(L5bands)])
+plot(L8bands,meanwp+stdwp,'g')
+plot(L8bands,meanwp-stdwp,'g')
+plot(L8bands,maxwp,'r')
+plot(L8bands,minwp,'r')
+xlim([min(L8bands) max(L8bands)])
 
 format short
 disp('---------------------------------------------------')
 disp('Basic Stats      Min       Max       Mean     Stdev  ') 
 disp('---------------------------------------------------')
 
-bands = [1 2 3 4 5 7];
+bands = [1 2 3 4 5 6 7];
 
 for i = 1:size(minwp,2)
     str = sprintf('     band %i  %2.6f  %2.6f  %2.6f  %2.6f  %2.6f  %2.6f',bands(i),minwp(i), maxwp(i), meanwp(i), stdwp(i));
@@ -267,120 +258,150 @@ end
 nbins = 100;
 
 figure
-subplot(2,3,1)
+subplot(2,4,1)
 fs = 15;
 set(gcf,'color','white')
 hist(waterpixels(:,1),nbins)
 title('band 1','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,2)
+subplot(2,4,2)
 fs = 15;
 set(gcf,'color','white')
 hist(waterpixels(:,2),nbins)
 title('band 2','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,3)
+subplot(2,4,3)
 fs = 15;
 set(gcf,'color','white')
 hist(waterpixels(:,3),nbins)
 title('band 3','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,4)
+subplot(2,4,4)
 fs = 15;
 set(gcf,'color','white')
 hist(waterpixels(:,4),nbins)
 title('band 4','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,5)
+subplot(2,4,5)
 fs = 15;
 set(gcf,'color','white')
 hist(waterpixels(:,5),nbins)
 title('band 5','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,6)
+subplot(2,4,6)
 fs = 15;
 set(gcf,'color','white')
 hist(waterpixels(:,6),nbins)
+title('band 6','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,4,7)
+fs = 15;
+set(gcf,'color','white')
+hist(waterpixels(:,7),nbins)
 title('band 7','fontsize',fs)
 set(gca,'fontsize',fs)
 
 p=mtit('Histogram Water Pixels per Band',...
  	     'fontsize',fs+1,'xoff',0,'yoff',.025);
      
+%% display All water pixels
 
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,waterpixels')
+title('Reflectance water L8 image','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.18])
+ hold on
+ plot(L8bands,meanwp+stdwp,'g','linewidth',2)
+ 
 
 %% negative values
-im = double(im0115crop);
+im = double(imL8crop);
 imneg = zeros(size(im));
 imneg(im<0)=im(im<0);% only negatives
 
-imnegmask = zeros(size(im0115crop));% for displaying
-imnegmask(im<0)=1;
-imnegmask(im>=0)=0;
-imnegmask = imnegmask+0.5*repmat(~double(im0115cropmask),[1 1 size(im0115crop,3)]); % for the land appear gray
+imnegmask = zeros(size(imL8crop));% for displaying
+imnegmask(im<0)=1; % negative values are white
+imnegmask(im>=0)=0; % positive values are black
+imnegmask = imnegmask+0.5*repmat(~double(imL8cropmask),[1 1 size(imL8crop,3)]); % for the land appear gray
 
 figure
-subplot(2,3,1)
+subplot(2,4,1)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,1))
 title('band 1','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,2)
+subplot(2,4,2)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,2))
 title('band 2','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,3)
+subplot(2,4,3)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,3))
 title('band 3','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,4)
+subplot(2,4,4)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,4))
 title('band 4','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,5)
+subplot(2,4,5)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,5))
 title('band 5','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,3,6)
+subplot(2,4,6)
+fs = 15;
+set(gcf,'color','white')
+imshow(imnegmask(:,:,6))
+title('band 6','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(2,4,7)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,6))
 title('band 7','fontsize',fs)
 set(gca,'fontsize',fs)
 
+
 p=mtit('Negative Values',...
  	     'fontsize',fs+1,'xoff',0,'yoff',.025);
      
-imnegb7 = imneg(:,:,6);  % to see negative values stats
+     
+     
+imnegb7 = imneg(:,:,1);  % to see negative values stats
 mean(imnegb7(:))
 std(imnegb7(:))
 %% Display negative values
-waterpixels_neg = waterpixels(waterpixels(:,5)<0,:);
+waterpixels_neg = waterpixels(waterpixels(:,2)<0,:);
 
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L5bands,waterpixels_neg')
-title('Reflectance water L5 image','fontsize',fs)
+plot(L8bands,waterpixels_neg')
+title('Reflectance water L8 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
@@ -405,7 +426,7 @@ ylim([0 0.18])
 % LUT2 = LUT2';% ex: 1000x6
 
 % % % before 04/21/13
-% % rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTjavierL5.txt');
+% % rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTjavierL8.txt');
 % % LUT3 = rr(:,2:end)';
 % % LUTconc3 = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list.txt');
 % % 
@@ -416,20 +437,26 @@ ylim([0 0.18])
 % % 
 % % 
 % % % new 04/21/13
-% % rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL5130421.txt');
+% % rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8130421.txt');
 % % LUT1200 = rr(:,2:end)';
 % % LUT1200conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130421.txt');
 % % 
 % % % new 05/08/13
-% % rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL5130508.txt');
+% % rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8130508.txt');
 % % LUT1568 = rr(:,2:end)';
 % % LUT1568conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130508.txt');
 
 
 % new 05/08/13
-rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL5130511.txt');
+% rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL5130511.txt');
+% LUT2240 = rr(:,2:end)';
+% LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130511.txt');
+
+% new 10/21/13
+rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8131021.txt');
 LUT2240 = rr(:,2:end)';
 LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130511.txt');
+
 
 % LUT1000 = LUT1200(LUT1200conc(:,1)<=100,:);
 % LUT1000conc = LUT1200conc(LUT1200conc(:,1)<=100,:);
@@ -443,7 +470,7 @@ LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentrat
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L5bands,LUT2240)
+plot(L8bands,LUT2240)
 title('Reflectance LUT1000 - HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
@@ -452,7 +479,7 @@ set(gca,'fontsize',fs)
 % % figure
 % % fs = 15;
 % % set(gcf,'color','white')
-% % plot(L5bands,LUT2)
+% % plot(L8bands,LUT2)
 % % title('Reflectance LUT2 - HydroLight','fontsize',fs)
 % % xlabel('wavelength [\mu m]','fontsize',fs)
 % % ylabel('reflectance','fontsize',fs)
@@ -478,14 +505,14 @@ set(gca,'fontsize',fs)
 % figure
 % fs = 15;
 % set(gcf,'color','white')
-% plot(L5bands,waterdarkestred')
+% plot(L8bands,waterdarkestred')
 % hold on
-% plot(L5bands,waterpixelspermag','c')
-% plot(L5bands,LUTdarkestred','r')
-% plot(L5bands,LUT1000(1,:)','k')
+% plot(L8bands,waterpixelspermag','c')
+% plot(L8bands,LUTdarkestred','r')
+% plot(L8bands,LUT1000(1,:)','k')
 % 
-% legend('L5 per b3','L5 per mag','HL:0.25;0.25;14','HL:0.25;0.25;0.25')
-% title('Darkest pixel - L5 vs HL','fontsize',fs)
+% legend('L8 per b3','L8 per mag','HL:0.25;0.25;14','HL:0.25;0.25;0.25')
+% title('Darkest pixel - L8 vs HL','fontsize',fs)
 % xlabel('wavelength [\mu m]','fontsize',fs)
 % ylabel('reflectance','fontsize',fs)
 % set(gca,'fontsize',fs)
@@ -499,7 +526,7 @@ CHLconc  = unique(LUTconc(:,1))
 
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResultstest,residual] = opt(LUT2240(:,1:4),LUT2240(:,1:4),LUTconc);
+    [XResultstest,residual] = opt(LUT2240(:,1:5),LUT2240(:,1:5),LUTconc);
 disp('Optimization Routine finished Successfully')
 
 % E_RMS
@@ -521,21 +548,25 @@ disp(str)
 %% Residual Histogram
 figure
 set(gcf,'color','white')
-subplot(2,2,1)
+subplot(2,3,1)
 hist(residual(:,1))
 title('band 1')
 
-subplot(2,2,2)
+subplot(2,3,2)
 hist(residual(:,2))
 title('band 2')
 
-subplot(2,2,3)
+subplot(2,3,3)
 hist(residual(:,3))
 title('band 3')
 
-subplot(2,2,4)
+subplot(2,3,4)
 hist(residual(:,4))
 title('band 4')
+
+subplot(2,3,5)
+hist(residual(:,5))
+title('band 5')
 %% Display data vs retrieved
 
 figure
@@ -625,40 +656,81 @@ axis equal
 %% Retrieval
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    XResults = opt(waterpixels(:,1:4),LUT2240(:,1:4),LUT2240conc);
+    XResults = opt(waterpixels(:,1:5),LUT2240(:,1:5),LUT2240conc);
 disp('Optimization Routine finished Successfully')
 %% Mapping Concentrations
+
+landmask = imL8cropmask==1;
 
 ConcRet = zeros(size(masknew),3);
 ConcRet(masknew==1,:) = XResults; % Concentration Retrieved
 
-CHLmap  = reshape(ConcRet(:,1),[size(im0115cropmask,1) size(im0115cropmask,2) size(im0115cropmask,3)]);
-SMmap   = reshape(ConcRet(:,2),[size(im0115cropmask,1) size(im0115cropmask,2) size(im0115cropmask,3)]);
-CDOMmap = reshape(ConcRet(:,3),[size(im0115cropmask,1) size(im0115cropmask,2) size(im0115cropmask,3)]);
+CHLmap  = reshape(ConcRet(:,1),[size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
+SMmap   = reshape(ConcRet(:,2),[size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
+CDOMmap = reshape(ConcRet(:,3),[size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
+
+CHLmaplog10 = log10(CHLmap);
+CHLmaplog10(CHLmaplog10==-Inf)=-12;
+% CHLmaplog10masked = bsxfun(@times, CHLmaplog10, landmask);
+
+SMmaplog10 = log10(SMmap);
+SMmaplog10(SMmaplog10==-Inf)=-12;
+% SMmaplog10masked = bsxfun(@times, SMmaplog10, landmask);
+
+CDOMmaplog10 = log10(CDOMmap);
+CDOMmaplog10(CDOMmaplog10==-Inf)=-12;
+% CDOMmaplog10masked = bsxfun(@times, CDOMmaplog10, landmask);
 
 figure
 fs = 15;
 set(gcf,'color','white')
-imagesc(CHLmap,[100 175])
+imagesc(CHLmaplog10)
 title('CHL map','fontsize',fs)
 set(gca,'fontsize',fs)
+axis('equal')
 colorbar
 
 figure
 fs = 15;
 set(gcf,'color','white')
-imagesc(SMmap,[0 50])
+imagesc(SMmaplog10)
 title('SM map','fontsize',fs)
 set(gca,'fontsize',fs)
+axis('equal')
 colorbar
 
 figure
 fs = 15;
 set(gcf,'color','white')
-imagesc(CDOMmap)
+imagesc(CDOMmaplog10)
 title('CDOM map','fontsize',fs)
 set(gca,'fontsize',fs)
+axis('equal')
 colorbar
+%% Histogram of concentrations
+nbins = 50;
+figure
+subplot(1,3,1)
+fs = 15;
+set(gcf,'color','white')
+hist(CHLmaplog10(CHLmaplog10~=-Inf),nbins)
+title('CHL','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(1,3,2)
+fs = 15;
+set(gcf,'color','white')
+hist(SMmaplog10(SMmaplog10~=-Inf),nbins)
+title('SM','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(1,3,3)
+fs = 15;
+set(gcf,'color','white')
+hist(CDOMmaplog10(CDOMmaplog10~=-Inf),nbins)
+title('CDOM','fontsize',fs)
+set(gca,'fontsize',fs)
+
 
 %% Comparison between two LUTs from Aaron and one curve from HL5.1 in tropos
 % % % 
@@ -670,9 +742,6 @@ colorbar
 % % % % plot(r_02502514(:,2),'r')
 
 %% Figure for Dr. John - 09/23/13
-
-
-
 figure
 set(gcf,'color','white')
 subplot(2,2,1)

@@ -1,6 +1,6 @@
 % Optimization Routine
-function XResults = opt(Ytest,LUT,LUTconc)
-% format long;
+function [XResults,residual] = opt(Ytest,LUT,LUTconc)
+format long;
 
 % Xtest: water pixels concentration from the image; Dim: 2000x3
 % Ytest: water pixels reflectance from the image; Dim: 2000x8
@@ -15,7 +15,7 @@ Y = LUT;
 CDOMconc = unique(LUTconc(:,3))';
 SMconc   = unique(LUTconc(:,2))';
 CHLconc  = unique(LUTconc(:,1))';
-[f2,f1,f3] = ndgrid(CDOMconc,SMconc,CHLconc); % CDOM SM CHL
+% [f2,f1,f3] = ndgrid(CDOMconc,SMconc,CHLconc); % CDOM SM CHL
 options = optimset('Display','off','Tolfun',1e-10);
 
 matlabpool open 4 % for using paralel computing
@@ -25,8 +25,13 @@ XResults=zeros(size(Ytest,1),3);
 tic
 parfor i = 1:size(Ytest,1)
 %     if visual==1
-
-     
+% figure(30)
+% clf
+% 
+% i
+% if i==172
+%    disp('i=172') 
+% end
 
 %     figure(68)
 %     clf
@@ -54,7 +59,7 @@ parfor i = 1:size(Ytest,1)
     % Y: LUT
     % Ytest: TestSamples
     % f1,f2,f3: Grid for the LUT
-    XResults(i,:) = lsqnonlin(@MyTrilinearInterp,x0,...
+    [XResults(i,:),~,residual(i,:)]= lsqnonlin(@MyTrilinearInterp,x0,...
         [min(LUTconc(:,1));min(LUTconc(:,2));min(LUTconc(:,3))],...
         [max(LUTconc(:,1));max(LUTconc(:,2));max(LUTconc(:,3))],...
         options,LUT,Ytest(i,:),LUTconc);
@@ -65,5 +70,10 @@ disp(toc/60)
 
 matlabpool close % for using paralel computing
 beep
+pause(0.1)
+beep
+pause(0.1)
+beep
+pause(0.1)
 beep
 

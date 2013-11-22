@@ -169,7 +169,7 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 % imL8crop = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONelm130917resampledtif.tif');
 imL8crop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131119testtif.tif');
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131120testtif.tif');
 
 
 
@@ -616,42 +616,6 @@ xlabel('real','fontsize',fs)
 ylabel('retrieved','fontsize',fs)
 set(gca,'fontsize',fs)
 axis equal
-%% Display concentrations - data vs retrieved
-% % % % figure
-% % % % fs = 15;
-% % % % set(gcf,'color','white')
-% % % % plot(LUTconc(:,1),'r')
-% % % % title('CHL Real vs retrieved','fontsize',fs)
-% % % % xlabel('real','fontsize',fs)
-% % % % ylabel('retrieved','fontsize',fs)
-% % % % set(gca,'fontsize',fs)
-% % % % hold on
-% % % % plot(XResultstest(:,1))
-% % % % legend('real','retrieved')
-% % % % 
-% % % % figure
-% % % % fs = 15;
-% % % % set(gcf,'color','white')
-% % % % plot(LUTconc(:,2),'r')
-% % % % title('SM Real vs retrieved','fontsize',fs)
-% % % % xlabel('real','fontsize',fs)
-% % % % ylabel('retrieved','fontsize',fs)
-% % % % set(gca,'fontsize',fs)
-% % % % hold on
-% % % % plot(XResultstest(:,2))
-% % % % legend('real','retrieved')
-% % % % 
-% % % % figure
-% % % % fs = 15;
-% % % % set(gcf,'color','white')
-% % % % plot(LUTconc(:,3),'r')
-% % % % title('CDOM Real vs retrieved','fontsize',fs)
-% % % % xlabel('real','fontsize',fs)
-% % % % ylabel('retrieved','fontsize',fs)
-% % % % set(gca,'fontsize',fs)
-% % % % hold on
-% % % % plot(XResultstest(:,3))
-% % % % legend('real','retrieved')
 
 %% Retrieval
 disp('--------------------------------------------------------------------------')
@@ -707,7 +671,7 @@ title('CDOM map','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
 colorbar
-%% Histogram of concentrations
+%% Histogram of concentrations log scale
 nbins = 50;
 figure
 subplot(1,3,1)
@@ -730,7 +694,29 @@ set(gcf,'color','white')
 hist(CDOMmaplog10(CDOMmaplog10~=-Inf),nbins)
 title('CDOM','fontsize',fs)
 set(gca,'fontsize',fs)
+%% Histogram of concentrations
+nbins = 50;
+figure
+subplot(1,3,1)
+fs = 15;
+set(gcf,'color','white')
+hist(XResults(:,1),nbins)
+title('CHL','fontsize',fs)
+set(gca,'fontsize',fs)
 
+subplot(1,3,2)
+fs = 15;
+set(gcf,'color','white')
+hist(XResults(:,2),nbins)
+title('SM','fontsize',fs)
+set(gca,'fontsize',fs)
+
+subplot(1,3,3)
+fs = 15;
+set(gcf,'color','white')
+hist(XResults(:,3),nbins)
+title('CDOM','fontsize',fs)
+set(gca,'fontsize',fs)
 
 %% Comparison between two LUTs from Aaron and one curve from HL5.1 in tropos
 % % % 
@@ -754,7 +740,7 @@ axis off
 subplot(2,2,2)
 fs = 15;
 % set(gcf,'color','white')
-imagesc(CHLmap,[100 175])
+imagesc(CHLmap)
 title('CHL map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar
@@ -764,7 +750,7 @@ axis off
 subplot(2,2,3)
 fs = 15;
 % set(gcf,'color','white')
-imagesc(SMmap,[0 50])
+imagesc(SMmap)
 title('SM map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar
@@ -775,6 +761,46 @@ subplot(2,2,4)
 fs = 15;
 % set(gcf,'color','white')
 imagesc(CDOMmap)
+title('CDOM map ','fontsize',fs)
+set(gca,'fontsize',fs)
+colorbar
+axis equal
+axis off
+
+%% Figure for Dr. John - 09/23/13
+figure
+set(gcf,'color','white')
+subplot(2,2,1)
+imagesc(impos)
+title('RGB image ','fontsize',fs)
+set(gca,'fontsize',fs)
+axis equal
+axis off
+
+subplot(2,2,2)
+fs = 15;
+% set(gcf,'color','white')
+imagesc(CHLmaplog10)
+title('CHL map ','fontsize',fs)
+set(gca,'fontsize',fs)
+colorbar
+axis equal
+axis off
+
+subplot(2,2,3)
+fs = 15;
+% set(gcf,'color','white')
+imagesc(CHLmaplog10)
+title('SM map ','fontsize',fs)
+set(gca,'fontsize',fs)
+colorbar
+axis equal
+axis off
+
+subplot(2,2,4)
+fs = 15;
+% set(gcf,'color','white')
+imagesc(CHLmaplog10)
 title('CDOM map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar

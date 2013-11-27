@@ -169,7 +169,7 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 % imL8crop = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONelm130917resampledtif.tif');
 imL8crop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131120testtif.tif');
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131126testtif.tif');
 
 
 
@@ -178,7 +178,7 @@ imL8crop = imread(...
 % imL8cropmask = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONmaskmin0p5resampled.tif');
 imL8cropmask = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131119testWaterMasktif.tif');
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
 
 
 
@@ -323,7 +323,6 @@ set(gca,'fontsize',fs)
 % ylim([0 0.18])
  hold on
  plot(L8bands,meanwp+stdwp,'g','linewidth',2)
- 
 
 %% negative values
 im = double(imL8crop);
@@ -335,53 +334,53 @@ imnegmask(im<0)=1; % negative values are white
 imnegmask(im>=0)=0; % positive values are black
 imnegmask = imnegmask+0.5*repmat(~double(imL8cropmask),[1 1 size(imL8crop,3)]); % for the land appear gray
 
-figure
-subplot(2,4,1)
-fs = 15;
-set(gcf,'color','white')
-imshow(imnegmask(:,:,1))
-title('band 1','fontsize',fs)
-set(gca,'fontsize',fs)
+% figure
+% subplot(3,3,1)
+% fs = 15;
+% set(gcf,'color','white')
+% imshow(imnegmask(:,:,1))
+% title('band 1','fontsize',fs)
+% set(gca,'fontsize',fs)
+% 
+% subplot(3,3,2)
+% fs = 15;
+% set(gcf,'color','white')
+% imshow(imnegmask(:,:,2))
+% title('band 2','fontsize',fs)
+% set(gca,'fontsize',fs)
+% 
+% subplot(3,3,3)
+% fs = 15;
+% set(gcf,'color','white')
+% imshow(imnegmask(:,:,3))
+% title('band 3','fontsize',fs)
+% set(gca,'fontsize',fs)
+% 
+% subplot(3,3,4)
+% fs = 15;
+% set(gcf,'color','white')
+% imshow(imnegmask(:,:,4))
+% title('band 4','fontsize',fs)
+% set(gca,'fontsize',fs)
 
-subplot(2,4,2)
-fs = 15;
-set(gcf,'color','white')
-imshow(imnegmask(:,:,2))
-title('band 2','fontsize',fs)
-set(gca,'fontsize',fs)
-
-subplot(2,4,3)
-fs = 15;
-set(gcf,'color','white')
-imshow(imnegmask(:,:,3))
-title('band 3','fontsize',fs)
-set(gca,'fontsize',fs)
-
-subplot(2,4,4)
-fs = 15;
-set(gcf,'color','white')
-imshow(imnegmask(:,:,4))
-title('band 4','fontsize',fs)
-set(gca,'fontsize',fs)
-
-subplot(2,4,5)
+subplot(2,2,1)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,5))
 title('band 5','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,4,6)
+subplot(2,2,2)
 fs = 15;
 set(gcf,'color','white')
 imshow(imnegmask(:,:,6))
 title('band 6','fontsize',fs)
 set(gca,'fontsize',fs)
 
-subplot(2,4,7)
+subplot(2,2,3)
 fs = 15;
 set(gcf,'color','white')
-imshow(imnegmask(:,:,6))
+imshow(imnegmask(:,:,7))
 title('band 7','fontsize',fs)
 set(gca,'fontsize',fs)
 
@@ -390,23 +389,110 @@ p=mtit('Negative Values',...
  	     'fontsize',fs+1,'xoff',0,'yoff',.025);
      
      
+format short
+disp('----------------------------------------------------------')
+disp('Basic Stats      Min       Max       Mean     Stdev    N  ') 
+disp('----------------------------------------------------------')
+
+bands = [5 6 7];
+
+for i = 1:size(bands,2)
+    data = imneg(:,:,bands(i));
+    str = sprintf('     band %i  %2.6f  %2.6f  %2.6f  %2.6f  %2.6f  %2.6f %6.0i'...
+        ,bands(i),min(data(:)), max(data(:)), mean(data(:)), std(data(:)),sum(sum(data<0)));
+    disp(str)
+end
      
-imnegb7 = imneg(:,:,1);  % to see negative values stats
-mean(imnegb7(:))
-std(imnegb7(:))
 %% Display negative values
-waterpixels_neg = waterpixels(waterpixels(:,2)<0,:);
+bn = 7;
+waterpixels_neg = waterpixels(waterpixels(:,bn)<0,:);
 
 figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixels_neg')
-title('Reflectance water L8 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
-ylim([0 0.18])
+str = sprintf('Curves with negatives values in Band %i',bn);
+title(str,'fontsize',fs)
+% ylim([0 0.18])
 
+%% Display high values in the different bands
+im = double(imL8crop);
+bn = 5;
+imhighNIR = zeros(size(im,1),size(im,2));
+cond2 = im(:,:,bn)> (meanwp(bn)+2*stdwp(bn)) & imL8cropmask ~= 0;
+imhighNIR(cond2)=1;% only high NIR
+
+imhighNIRmask = imhighNIR+0.5*repmat(~double(imL8cropmask),[1 1 1]); % for the land appear gray
+
+
+figure
+fs = 15;
+set(gcf,'color','white')
+imshow(imhighNIRmask)
+str = sprintf('High values for band %i',bn);
+title(str,'fontsize',fs)
+set(gca,'fontsize',fs)
+
+% display All water pixels with no high values in NIR
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,waterpixels(waterpixels(:,bn)<meanwp(bn)+2*stdwp(bn),:)')
+str = sprintf('Reflectance water L8 image with low values band %i',bn);
+title(str,'fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.18])
+hold on
+plot(L8bands,meanwp+stdwp,'g','linewidth',2)
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,waterpixels(waterpixels(:,bn)>meanwp(bn)+2*stdwp(bn),:)')
+str = sprintf('Reflectance water L8 image with high values band %i',bn);
+title(str,'fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.18])
+hold on
+plot(L8bands,meanwp+stdwp,'g','linewidth',2)
+
+%% Pixels that B5 > B3
+im = double(imL8crop);
+imB5greaterthanB3 = zeros(size(im,1),size(im,2));
+cond3 = (im(:,:,5)> im(:,:,3) )& (imL8cropmask ~= 0);
+imB5greaterthanB3(cond3)=1;% only high NIR
+
+imB5greaterthanB3mask = imB5greaterthanB3+0.5*repmat(~double(imL8cropmask),[1 1 1]); % for the land appear gray
+
+
+figure
+fs = 15;
+set(gcf,'color','white')
+imshow(imB5greaterthanB3mask)
+str = sprintf('High values for band %i',bn);
+title(str,'fontsize',fs)
+set(gca,'fontsize',fs)
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,waterpixels(waterpixels(:,5)>waterpixels(:,3),:)')
+str = sprintf('Reflectance water L8 image with high values band %i',bn);
+title(str,'fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.18])
+hold on
+plot(L8bands,meanwp+stdwp,'g','linewidth',2)
 
 %% LUTs from HydroLight
 % LUT1temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT.txt');
@@ -475,6 +561,8 @@ title('Reflectance LUT1000 - HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
+ hold on
+ plot(L8bands,meanwp+stdwp,'g','linewidth',2)
 % % 
 % % figure
 % % fs = 15;

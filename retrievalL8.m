@@ -168,11 +168,19 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 
 % imL8crop = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONelm130917resampledtif.tif');
+
+% Bright=city pixel;Dark=Reflectance Measurement
+% imL8crop = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131209test.tif');
+  
+
+% 01/12/14 ELM with two pixels with known reflectances - traditional ELM
+% imL8crop = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm140112testtif.tif');
+
+% 01/21/14 ELM with two pixels with known reflectances
 imL8crop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131126testtif.tif');
-
-
-
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm140121testtif.tif');
 
 %%%% Mask
 % imL8cropmask = imread(...
@@ -180,9 +188,8 @@ imL8crop = imread(...
 imL8cropmask = imread(...
     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
 
-
-
 imL8cropmask(imL8cropmask>0)=1;
+
 
 L8bands = [0.4430,0.4826,0.5613,0.6546,0.8646,1.6090,2.2010];
 
@@ -191,8 +198,20 @@ L8bands = [0.4430,0.4826,0.5613,0.6546,0.8646,1.6090,2.2010];
 imnew = reshape(imL8crop,[size(imL8crop,1)*size(imL8crop,2) size(imL8crop,3)]);
 masknew = reshape(imL8cropmask,[size(imL8cropmask,1)*size(imL8cropmask,2) size(imL8cropmask,3)]);
 
+
+
 waterpixels = imnew(masknew==1,:);
 waterpixels = double(waterpixels);
+
+% added 01-11-14. plot radiance curves
+% radiance image
+imL8radcrop = imread(...
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00rad_ONelm.tif');
+
+imradnew = reshape(imL8radcrop,[size(imL8radcrop,1)*size(imL8radcrop,2) size(imL8radcrop,3)]);
+
+waterradpixels = imradnew(masknew==1,:);
+waterradpixels = double(waterradpixels);
 %% for displaying
 imL8cropRGB(:,:,1)=imadjust(imL8crop(:,:,4));
 imL8cropRGB(:,:,2)=imadjust(imL8crop(:,:,3));
@@ -205,6 +224,7 @@ impos = double(imL8cropRGB);
 maskRGB(:,:,1)=double(imL8cropmask);
 maskRGB(:,:,2)=double(imL8cropmask);
 maskRGB(:,:,3)=double(imL8cropmask);
+ 
 
 impos = impos.*maskRGB;
 
@@ -214,7 +234,7 @@ set(gcf,'color','white')
 imagesc(impos)
 axis equal
 
-%% mask
+%% mask display
 figure
 set(gcf,'color','white')
 imshow(imadjust(imL8cropmask))
@@ -322,7 +342,21 @@ ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.18])
  hold on
- plot(L8bands,meanwp+stdwp,'g','linewidth',2)
+ plot(L8bands,meanwp,'g','linewidth',2)
+ 
+%% display All water pixels RADIANCE values
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,waterradpixels')
+title('Radiance water L8 image','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('Radiance [W/m^2/sr]','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 0.18])
+%  hold on
+%  plot(L8bands,meanwp+stdwp,'g','linewidth',2) 
 
 %% negative values
 im = double(imL8crop);
@@ -363,6 +397,7 @@ imnegmask = imnegmask+0.5*repmat(~double(imL8cropmask),[1 1 size(imL8crop,3)]); 
 % title('band 4','fontsize',fs)
 % set(gca,'fontsize',fs)
 
+figure
 subplot(2,2,1)
 fs = 15;
 set(gcf,'color','white')
@@ -494,6 +529,33 @@ set(gca,'fontsize',fs)
 hold on
 plot(L8bands,meanwp+stdwp,'g','linewidth',2)
 
+%% Pixels para incluir en el IGARSS14 abstract
+% water pixels reflectance
+waterpixelsamples = waterpixels(1:70:end,:);
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,waterpixelsamples(waterpixelsamples(:,5)<waterpixelsamples(:,3),:)')
+str = sprintf('Reflectance water pixels L8');
+title(str,'fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+set(gca,'fontsize',fs)
+% ylim([0 .25])
+
+% water pixels Radiance
+% figure
+% fs = 15;
+% set(gcf,'color','white')
+% plot(L8bands,waterradpixels(waterpixels(:,5)<waterpixels(:,3),:)')
+% str = sprintf('Radiance water pixels L8');
+% title(str,'fontsize',fs)
+% xlabel('wavelength [\mu m]','fontsize',fs)
+% ylabel('Radiance [W/m^2/sr]','fontsize',fs)
+% set(gca,'fontsize',fs)
+
+
+
 %% LUTs from HydroLight
 % LUT1temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT.txt');
 % LUT2temp = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/ReformedLUT1.txt');
@@ -538,10 +600,21 @@ plot(L8bands,meanwp+stdwp,'g','linewidth',2)
 % LUT2240 = rr(:,2:end)';
 % LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130511.txt');
 
-% new 10/21/13
-rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8131021.txt');
-LUT2240 = rr(:,2:end)';
-LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130511.txt');
+% % new 10/21/13
+% rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8131021.txt');
+% LUT2240 = rr(:,2:end)';
+% LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130511.txt');
+
+% new 12/18/13
+% rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8130919.txt'); % Created for 09/19/13 image!!!
+% LUT = rr(:,2:end)';
+% LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130919_2.txt');
+
+% new 02/06/14
+rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8130919_3.txt'); % Created for 09/19/13 image!!!
+LUT = rr(:,2:end)';
+LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130919_2.txt');
+
 
 
 % LUT1000 = LUT1200(LUT1200conc(:,1)<=100,:);
@@ -556,13 +629,13 @@ LUT2240conc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentrat
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUT2240)
-title('Reflectance LUT1000 - HydroLight','fontsize',fs)
+plot(L8bands,LUT)
+title('Reflectance LUT from HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
- hold on
- plot(L8bands,meanwp+stdwp,'g','linewidth',2)
+%  hold on
+%  plot(L8bands,meanwp+stdwp,'g','linewidth',2)
 % % 
 % % figure
 % % fs = 15;
@@ -607,14 +680,14 @@ set(gca,'fontsize',fs)
 % % ylim([0 0.2])
 
 %% Test the optimization algorhythm
-LUTconc = LUT2240conc;
+LUTconc = LUTconc;
 CDOMconc = unique(LUTconc(:,3))
 SMconc   = unique(LUTconc(:,2))
 CHLconc  = unique(LUTconc(:,1))
 
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResultstest,residual] = opt(LUT2240(:,1:5),LUT2240(:,1:5),LUTconc);
+    [XResultstest,residual] = opt(LUT(:,1:5),LUT(:,1:5),LUTconc);
 disp('Optimization Routine finished Successfully')
 
 % E_RMS
@@ -705,12 +778,12 @@ ylabel('retrieved','fontsize',fs)
 set(gca,'fontsize',fs)
 axis equal
 
-%% Retrieval
+%% Retrieval %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    XResults = opt(waterpixels(:,1:5),LUT2240(:,1:5),LUT2240conc);
+    XResults = opt(waterpixels(:,1:5),LUT(:,1:5),LUTconc);
 disp('Optimization Routine finished Successfully')
-%% Mapping Concentrations
+%% Mapping Concentrations log scale
 
 landmask = imL8cropmask==1;
 
@@ -737,7 +810,7 @@ figure
 fs = 15;
 set(gcf,'color','white')
 imagesc(CHLmaplog10)
-title('CHL map','fontsize',fs)
+title('CHL map log scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
 colorbar
@@ -746,7 +819,7 @@ figure
 fs = 15;
 set(gcf,'color','white')
 imagesc(SMmaplog10)
-title('SM map','fontsize',fs)
+title('SM map log scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
 colorbar
@@ -755,7 +828,34 @@ figure
 fs = 15;
 set(gcf,'color','white')
 imagesc(CDOMmaplog10)
-title('CDOM map','fontsize',fs)
+title('CDOM map log scale','fontsize',fs)
+set(gca,'fontsize',fs)
+axis('equal')
+colorbar
+%% Mapping Concentrations linear scale
+figure
+fs = 15;
+set(gcf,'color','white')
+imagesc(CHLmap)
+title('CHL map linear scale','fontsize',fs)
+set(gca,'fontsize',fs)
+axis('equal')
+colorbar
+
+figure
+fs = 15;
+set(gcf,'color','white')
+imagesc(SMmap)
+title('SM map linear scale','fontsize',fs)
+set(gca,'fontsize',fs)
+axis('equal')
+colorbar
+
+figure
+fs = 15;
+set(gcf,'color','white')
+imagesc(CDOMmap)
+title('CDOM map linear scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
 colorbar
@@ -782,7 +882,7 @@ set(gcf,'color','white')
 hist(CDOMmaplog10(CDOMmaplog10~=-Inf),nbins)
 title('CDOM','fontsize',fs)
 set(gca,'fontsize',fs)
-%% Histogram of concentrations
+%% Histogram of concentrations linear scale
 nbins = 50;
 figure
 subplot(1,3,1)
@@ -815,7 +915,7 @@ set(gca,'fontsize',fs)
 % % % plot(LUT1000(10,:),'k')
 % % % % plot(r_02502514(:,2),'r')
 
-%% Figure for Dr. John - 09/23/13
+%% Figure for Dr. John - 09/23/13 Linear Scale
 figure
 set(gcf,'color','white')
 subplot(2,2,1)
@@ -855,8 +955,9 @@ colorbar
 axis equal
 axis off
 
-%% Figure for Dr. John - 09/23/13
+%% Figure for Dr. John - 09/23/13 Log Scale
 figure
+fs = 20;
 set(gcf,'color','white')
 subplot(2,2,1)
 imagesc(impos)
@@ -866,8 +967,6 @@ axis equal
 axis off
 
 subplot(2,2,2)
-fs = 15;
-% set(gcf,'color','white')
 imagesc(CHLmaplog10)
 title('CHL map ','fontsize',fs)
 set(gca,'fontsize',fs)
@@ -876,9 +975,7 @@ axis equal
 axis off
 
 subplot(2,2,3)
-fs = 15;
-% set(gcf,'color','white')
-imagesc(CHLmaplog10)
+imagesc(SMmaplog10)
 title('SM map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar
@@ -886,12 +983,231 @@ axis equal
 axis off
 
 subplot(2,2,4)
-fs = 15;
-% set(gcf,'color','white')
-imagesc(CHLmaplog10)
+imagesc(CDOMmaplog10)
 title('CDOM map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar
 axis equal
 axis off
+
+%% Comparison one curve with new IOP
+
+j = (LUTconc(:,1) == 2.5 & LUTconc(:,2) == 0 & LUTconc(:,3) == 0);
+%0.300000000000000   0.250000000000000   0.135000000000000
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands*1000,LUT(j,:))
+hold on
+plot(wavelength,newR025,'r')
+title('Reflectance - HydroLight','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+legend('Old: 2.5 0.0 0.0 ','New 0.25 0.25 0.25')
+set(gca,'fontsize',fs)
+%% Figure for IGARSS14 abstract - Cranberry
+ROIcranELMbased = [
+0.016134;
+0.020274;
+0.045366;
+0.027074;
+0.008125];
+
+ROIcranELM = [
+0.017207;
+0.022009;
+0.053848;
+0.032086;
+0.008883];
+
+figure
+ylimit = [0 0.06];
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands(1:5)*1000,ROIcranELMbased)
+hold on
+plot(L8bands(1:5)*1000,ROIcranELM,'k')
+title('Cranberry Pond ROI','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+legend('ELM-based ','ELM')
+set(gca,'fontsize',fs)
+ylim(ylimit)
+
+%% Figure for IGARSS14 abstract - Long Pond
+ROIlonELMbased = [
+0.014342;
+0.017705;
+0.032769;
+0.021847;
+0.009542];
+
+ROIlonELM = [
+0.014612;
+0.018567;
+0.038103;
+0.025818;
+0.010349];
+
+figure
+ylimit = [0 0.06];
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands(1:5)*1000,ROIlonELMbased)
+hold on
+plot(L8bands(1:5)*1000,ROIlonELM,'k')
+title('Long Pond ROI','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+legend('ELM-based ','ELM')
+set(gca,'fontsize',fs)
+ylim(ylimit)
+
+%% Figure for IGARSS14 abstract - Near Shore Lake
+ROInearELMbased = [
+0.017452;
+0.022167;
+0.021507;
+0.005976;
+0.001954];
+
+ROInearELM = [
+0.019115;
+0.024545;
+0.024026;
+0.006784;
+0.0025];
+
+figure
+ylimit = [0 0.06];
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands(1:5)*1000,ROInearELMbased)
+hold on
+plot(L8bands(1:5)*1000,ROInearELM,'k')
+title('Near shore lake','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+legend('ELM-based ','ELM')
+set(gca,'fontsize',fs)
+ylim(ylimit)
+
+%% Figure for IGARSS14 abstract - Off Shore Lake
+ROIoffELMbased = [
+0.027888;
+0.035044;
+0.028504;
+0.007039;
+0.00107];
+
+ROIoffELM = [
+0.034223;
+0.041796;
+0.032772;
+0.008058;
+0.001585];
+
+figure
+ylimit = [0 0.06];
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands(1:5)*1000,ROIoffELMbased)
+hold on
+plot(L8bands(1:5)*1000,ROIoffELM,'k')
+title('Off shore lake','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+legend('ELM-based ','ELM')
+set(gca,'fontsize',fs)
+ylim(ylimit)
+
+%% Figure for IGARSS14 abstract - All
+
+figure
+ylimit = [0 0.06];
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands(1:5)*1000,ROIcranELMbased,'-bx')
+hold on
+plot(L8bands(1:5)*1000,ROIcranELM,'--bx')
+plot(L8bands(1:5)*1000,ROIlonELMbased,'-ro')
+plot(L8bands(1:5)*1000,ROIlonELM,'--ro')
+plot(L8bands(1:5)*1000,ROInearELMbased,'-mv')
+plot(L8bands(1:5)*1000,ROInearELM,'--mv')
+plot(L8bands(1:5)*1000,ROIoffELMbased,'-k+')
+plot(L8bands(1:5)*1000,ROIoffELM,'--k+')
+
+
+% title('Off shore lake','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('reflectance','fontsize',fs)
+legend('Cranberry ','Cranberry','Long','Long','Nearshore',...
+    'Nearshore','Offshore','Offshore')
+set(gca,'fontsize',fs)
+ylim(ylimit)
+
+%% Stat for IGARSS14 abstract
+disp('reflectance units')
+diffELM = [ROIcranELMbased-ROIcranELM ROIlonELMbased-ROIlonELM ...
+    ROInearELMbased-ROInearELM ROIoffELMbased-ROIoffELM];
+diffELM = 100*abs(diffELM); % in reflectance units
+max(max(diffELM,[],2))
+min(min(diffELM,[],2))  
+
+disp('percentage difference')
+diffELM = [(ROIcranELMbased-ROIcranELM)./max([ROIcranELM ROIcranELMbased],[],2) ...
+    (ROIlonELMbased-ROIlonELM)./max([ROIlonELM ROIlonELMbased],[],2) ...
+    (ROInearELMbased-ROInearELM)./max([ROInearELM ROInearELMbased],[],2) ...
+    (ROIoffELMbased-ROIoffELM)./max([ROIoffELM ROIoffELMbased],[],2)];
+diffELM = 100*abs(diffELM); % in reflectance units
+max(max(diffELM,[],2))
+min(min(diffELM,[],2)) 
+%% SNR Landsat-8
+SNRL8Ltyp = [
+130;
+130;
+100;
+90;
+90;
+100;
+100];
+
+SNRL7Ltyp = [
+72;
+49;
+30;
+27;
+19;
+14];
+
+SNRL8 = [
+439;
+402;
+256;
+207;
+156;
+134;
+111];
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands*1000,SNRL8Ltyp,'-bx')
+hold on
+plot(L8bands*1000,SNRL8,'-ro')
+plot(L8bands(2:end)*1000,SNRL7Ltyp,'-kv')
+% plot(L8bands(1:5)*1000,ROIcranELM,'--bx')
+% plot(L8bands(1:5)*1000,ROIlonELMbased,'-ro')
+% plot(L8bands(1:5)*1000,ROIlonELM,'--ro')
+% plot(L8bands(1:5)*1000,ROInearELMbased,'-mv')
+% plot(L8bands(1:5)*1000,ROInearELM,'--mv')
+% plot(L8bands(1:5)*1000,ROIoffELMbased,'-k+')
+% plot(L8bands(1:5)*1000,ROIoffELM,'--k+')
+
+
+% title('Off shore lake','fontsize',fs)
+xlabel('wavelength [nm]','fontsize',fs)
+ylabel('SNR','fontsize',fs)
+legend('L8 SNR at L typical','L8 SNR','L7 SNR')
+set(gca,'fontsize',fs)
 

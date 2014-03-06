@@ -4,13 +4,15 @@ function [a_SM,a_Chl,wavelength] = ParticleExtraction(Particles_curve,AfterMeth_
 % AfterMeth_curve = SM010702;
 
 wavelength = Particles_curve(:,1);
-ODfilt = Particles_curve(:,2)-Particles_curve(Particles_curve(:,1)==850,2); % direct from the filter w/o biass
-ODfilt = smooth(ODfilt);
+ODfilt = Particles_curve(:,2)-Particles_curve(Particles_curve(:,1)==800,2); % direct from the filter w/o biass
+% ODfilt = Particles_curve(:,2);
+% ODfilt = smooth(ODfilt);
 
 ODsusp = 0.378*ODfilt + 0.523*ODfilt.^2; % scattering correction
 
-Ap_pigm = AfterMeth_curve(:,2)-AfterMeth_curve(AfterMeth_curve(:,1)==850,2); % after pigment extraction w/o biass
-Ap_pigm = smooth(Ap_pigm);
+Ap_pigm = AfterMeth_curve(:,2)-AfterMeth_curve(AfterMeth_curve(:,1)==800,2); % after pigment extraction w/o biass
+% Ap_pigm = AfterMeth_curve(:,2);
+% Ap_pigm = smooth(Ap_pigm);
 
 ODp_pigm = 0.378*Ap_pigm + 0.523*Ap_pigm.^2; % scattering correction
 

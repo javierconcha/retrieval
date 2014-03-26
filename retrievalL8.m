@@ -179,8 +179,16 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm140112testtif.tif');
 
 % 01/21/14 ELM with two pixels with known reflectances
-imL8crop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm140121testtif.tif');
+% imL8crop = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm140121testtif.tif');
+
+% 03/17/14 ELM with two dark from HL and better mask for bright pixel
+folderpath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/';
+filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
+filepath = [folderpath filename];
+
+[imL8crop, cmap] = imread(filepath);
+INFO = imfinfo(filepath);
 
 %%%% Mask
 % imL8cropmask = imread(...
@@ -610,10 +618,29 @@ set(gca,'fontsize',fs)
 % LUT = rr(:,2:end)';
 % LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130919_2.txt');
 
-% new 02/06/14
-rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8130919_3.txt'); % Created for 09/19/13 image!!!
+% % new 02/06/14
+% rr = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/LUTL8130919_3.txt'); % Created for 09/19/13 image!!!
+% LUT = rr(:,2:end)';
+% LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130919_2.txt');
+
+% new 03/17/14
+% filepath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/';
+% LUTfilename = 'LUTL8130919_140317_2.txt'; 
+% LUTpath = [filepath LUTfilename];
+% rr = load(LUTpath); % Created for 09/19/13 image!!!
+% LUT = rr(:,2:end)';
+
+% new 03/24/14
+LUTfilename = 'LUTL8130919_140324.txt'; 
+LUTpath = [filepath LUTfilename];
+rr = load(LUTpath); % Created for 09/19/13 image!!!
 LUT = rr(:,2:end)';
-LUTconc = load('/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/concentration_list130919_2.txt');
+
+LUTconcfilename = 'concentration130919_140317.txt';
+LUTconpath = [filepath LUTconcfilename];
+LUTconc = load(LUTconpath);
+
+
 
 
 
@@ -859,6 +886,38 @@ title('CDOM map linear scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
 colorbar
+
+%% Save maps as TIFF
+
+t1 = Tiff('LC80160302013262LGN00CHLmap.tif','w');
+t2 = Tiff('LC80160302013262LGN00SMmap.tif','w');
+t3 = Tiff('LC80160302013262LGN00CDOMmap.tif','w');
+
+tagstruct.ImageLength = size(imL8crop,1);
+tagstruct.ImageWidth = size(imL8crop,2);
+tagstruct.Photometric = Tiff.Photometric.LinearRaw;
+tagstruct.SampleFormat = 3; %'IEEEFP'
+tagstruct.BitsPerSample = 64;
+tagstruct.SamplesPerPixel = 1;
+tagstruct.RowsPerStrip = 16;
+tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
+tagstruct.Software = 'MATLAB';
+
+t1.setTag(tagstruct)
+t1.write(CHLmap)
+t1.close();
+
+t2.setTag(tagstruct)
+t2.write(SMmap)
+t2.close();
+
+t3.setTag(tagstruct)
+t3.write(CDOMmap)
+t3.close();
+
+% imagesc(imread('LC80160302013262LGN00CHLmap.tif'));
+% axis equal
+
 %% Histogram of concentrations log scale
 nbins = 50;
 figure
@@ -1020,6 +1079,13 @@ ROIcranELM = [
 0.032086;
 0.008883];
 
+ROIcranELMbased_2 = [
+0.011324;
+0.017161;
+0.044049;
+0.025132;
+0.007446];
+
 figure
 ylimit = [0 0.06];
 fs = 15;
@@ -1027,10 +1093,11 @@ set(gcf,'color','white')
 plot(L8bands(1:5)*1000,ROIcranELMbased)
 hold on
 plot(L8bands(1:5)*1000,ROIcranELM,'k')
+plot(L8bands(1:5)*1000,ROIcranELMbased_2,'r')
 title('Cranberry Pond ROI','fontsize',fs)
 xlabel('wavelength [nm]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
-legend('ELM-based ','ELM')
+legend('ELM-based ','ELM','ELM-based last')
 set(gca,'fontsize',fs)
 ylim(ylimit)
 
@@ -1049,6 +1116,13 @@ ROIlonELM = [
 0.025818;
 0.010349];
 
+ROIlonELMbased_2 = [
+0.010341;
+0.015300;
+0.032767;
+0.021387;
+0.010064];
+
 figure
 ylimit = [0 0.06];
 fs = 15;
@@ -1056,10 +1130,11 @@ set(gcf,'color','white')
 plot(L8bands(1:5)*1000,ROIlonELMbased)
 hold on
 plot(L8bands(1:5)*1000,ROIlonELM,'k')
+plot(L8bands(1:5)*1000,ROIlonELMbased_2,'r')
 title('Long Pond ROI','fontsize',fs)
 xlabel('wavelength [nm]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
-legend('ELM-based ','ELM')
+legend('ELM-based ','ELM','ELM-based last')
 set(gca,'fontsize',fs)
 ylim(ylimit)
 
@@ -1078,6 +1153,13 @@ ROInearELM = [
 0.006784;
 0.0025];
 
+ROInearELMbased_2 = [
+0.019065;
+0.026542;
+0.024400;
+0.005017;
+0.000435];
+
 figure
 ylimit = [0 0.06];
 fs = 15;
@@ -1085,10 +1167,11 @@ set(gcf,'color','white')
 plot(L8bands(1:5)*1000,ROInearELMbased)
 hold on
 plot(L8bands(1:5)*1000,ROInearELM,'k')
+plot(L8bands(1:5)*1000,ROInearELMbased_2,'r')
 title('Near shore lake','fontsize',fs)
 xlabel('wavelength [nm]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
-legend('ELM-based ','ELM')
+legend('ELM-based ','ELM','ELM-based last')
 set(gca,'fontsize',fs)
 ylim(ylimit)
 
@@ -1107,6 +1190,13 @@ ROIoffELM = [
 0.008058;
 0.001585];
 
+ROIoffELMbased_2 = [
+0.025117;
+0.033191;
+0.028369;
+0.006098;
+0.000265];
+
 figure
 ylimit = [0 0.06];
 fs = 15;
@@ -1114,10 +1204,11 @@ set(gcf,'color','white')
 plot(L8bands(1:5)*1000,ROIoffELMbased)
 hold on
 plot(L8bands(1:5)*1000,ROIoffELM,'k')
+plot(L8bands(1:5)*1000,ROIoffELMbased_2,'r')
 title('Off shore lake','fontsize',fs)
 xlabel('wavelength [nm]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
-legend('ELM-based ','ELM')
+legend('ELM-based ','ELM','ELM-based last')
 set(gca,'fontsize',fs)
 ylim(ylimit)
 
@@ -1127,22 +1218,26 @@ figure
 ylimit = [0 0.06];
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands(1:5)*1000,ROIcranELMbased,'-bx')
+plot(L8bands(1:5)*1000,ROIcranELMbased,'--bx','linewidth',1.5)
 hold on
-plot(L8bands(1:5)*1000,ROIcranELM,'--bx')
-plot(L8bands(1:5)*1000,ROIlonELMbased,'-ro')
-plot(L8bands(1:5)*1000,ROIlonELM,'--ro')
-plot(L8bands(1:5)*1000,ROInearELMbased,'-mv')
-plot(L8bands(1:5)*1000,ROInearELM,'--mv')
-plot(L8bands(1:5)*1000,ROIoffELMbased,'-k+')
-plot(L8bands(1:5)*1000,ROIoffELM,'--k+')
+plot(L8bands(1:5)*1000,ROIcranELM,'-bx','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIcranELM_2,'-.bx','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIlonELMbased,'--ro','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIlonELM,'-ro','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIlonELM_2,'-.ro','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROInearELMbased,'--mv','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROInearELM,'-mv','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROInearELM_2,'-.mv','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIoffELMbased,'--k+','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIoffELM,'-k+','linewidth',1.5)
+plot(L8bands(1:5)*1000,ROIoffELM_2,'-.k+','linewidth',1.5)
 
 
 % title('Off shore lake','fontsize',fs)
 xlabel('wavelength [nm]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
-legend('Cranberry ','Cranberry','Long','Long','Nearshore',...
-    'Nearshore','Offshore','Offshore')
+legend('Cran ELM-based ','Cran ELM','Cran ELM-based last','Long ELM-based','Long ELM','Long ELM-based last','ONTNS ELM-based',...
+    'ONTNS ELM','ONTNS ELM-based last','ONTOS ELM-based','ONTOS ELM','ONTOS ELM-based last')
 set(gca,'fontsize',fs)
 ylim(ylimit)
 

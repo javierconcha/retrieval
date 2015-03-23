@@ -67,9 +67,17 @@ for col = 1:size(M,2)
     DEN = trapz(lambda,band6);
     p6 = NUM/DEN;
     
+    if isnan(p6)
+        p6=0;
+    end
+    
     NUM = trapz(lambda,r1.*band7);
     DEN = trapz(lambda,band7);
     p7 = NUM/DEN;
+    
+    if isnan(p7)
+        p7=0;
+    end
     
     reflec_resp(:,col) = [p1; p2; p3; p4; p5; p6; p7];
 end

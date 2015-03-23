@@ -6,8 +6,8 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 %% L8 image cropped
 % 03/17/14 ELM with two dark from HL and better mask for bright pixel
 folderpath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/';
-% filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
-filename = 'LC80160302013262LGN00_ONelm140629.tif';
+filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
+% filename = 'LC80160302013262LGN00_ONelm140629.tif'; % corrected with Rrs
 filepath = [folderpath filename];
 
 [imL8crop, cmap] = imread(filepath);
@@ -364,45 +364,50 @@ set(gca,'fontsize',fs)
 % LUTconcfilename = 'concentration_list140409.txt';
 
 % % new 04/11/14, spectrally sampling made in matlab
-% LUTfilename1 = 'Rvector130919_140411.txt'; 
-% LUTconcfilename1 = 'concentration130919_140411.txt';
+LUTfilename1 = 'Rvector130919_140411.txt'; 
+LUTconcfilename1 = 'concentration130919_140411.txt';
 % 
 % % new 05/15/14, spectrally sampling made in matlab
-% LUTfilename2 = 'Rvector130919_140515.txt'; 
-% LUTconcfilename2 = 'concentration130919_140515.txt';
-% filepath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/';
+LUTfilename2 = 'Rvector130919_140515.txt'; 
+LUTconcfilename2 = 'concentration130919_140515.txt';
+
+filepath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/HLinout/';
 
 % new 06/30/14, Rrs not completed
 % LUTfilename1 = 'Rvector130919_140630.txt'; 
 % LUTconcfilename1 = 'concentration130919_140630.txt';
 
 % new 07/02/14, Rrs completed
-LUTfilename1 = 'Rvector130919_140703.txt'; 
-LUTconcfilename1 = 'concentration130919_140703.txt';
+% LUTfilename1 = 'Rvector130919_140703.txt'; 
+% LUTconcfilename1 = 'concentration130919_140703.txt';
 
-filepath1 = '/Users/Javier/Desktop/Javier/PHD_RIT/LDCM/InputOutput/130919/';
+% new 07/09/14, Rrs completed more DPFs
+% LUTfilename2 = 'Rvector130919_140709.txt'; 
+% LUTconcfilename2 = 'concentration130919_140709.txt';
+
+% filepath = '/Users/Javier/Desktop/Javier/PHD_RIT/LDCM/InputOutput/130919/';
 
 
 
-LUTpath1 = [filepath1 LUTfilename1];
+LUTpath1 = [filepath LUTfilename1];
 rr1 = load(LUTpath1); % Created for 09/19/13 image!!!
 
-% LUTpath2 = [filepath LUTfilename2];
-% rr2 = load(LUTpath2); % Created for 09/19/13 image!!!
+LUTpath2 = [filepath LUTfilename2];
+rr2 = load(LUTpath2); % Created for 09/19/13 image!!!
 
-LUTconpath1 = [filepath1 LUTconcfilename1];
+LUTconpath1 = [filepath LUTconcfilename1];
 fid = fopen(LUTconpath1);
 c1 = textscan(fid,'%s %f %f %f %s');
 fclose all;
 
-% LUTconpath2 = [filepath LUTconcfilename2];
-% fid = fopen(LUTconpath2);
-% c2 = textscan(fid,'%s %f %f %f %s');
-% fclose all;
+LUTconpath2 = [filepath LUTconcfilename2];
+fid = fopen(LUTconpath2);
+c2 = textscan(fid,'%s %f %f %f %s');
+fclose all;
 
-% c = {[c1{1};c2{1}] [c1{2};c2{2}] [c1{3};c2{3}] [c1{4};c2{4}] [c1{5};c2{5}]};
+c = {[c1{1};c2{1}] [c1{2};c2{2}] [c1{3};c2{3}] [c1{4};c2{4}] [c1{5};c2{5}]};
 
-c = {[c1{1}] [c1{2}] [c1{3}] [c1{4}] [c1{5}]};
+% c = {[c1{1}] [c1{2}] [c1{3}] [c1{4}] [c1{5}]};
 
 LUTconc = [c{2}(:) c{3}(:) c{4}(:)];
 
@@ -425,15 +430,13 @@ wavelength = [...
 wavelength = wavelength'*0.001;
 
 nruns = size(rr1,1)/size(wavelength,1);
-Rrs = reshape(rr1(:,1),size(wavelength,1),nruns);
-% Rrs1 = Rrs1*pi;
+Rrs1 = reshape(rr1(:,1),size(wavelength,1),nruns);
 
+nruns = size(rr2,1)/size(wavelength,1);
+Rrs2 = reshape(rr2(:,1),size(wavelength,1),nruns);
 
-% nruns = size(rr2,1)/size(wavelength,1);
-% Rrs2 = reshape(rr2(:,1),size(wavelength,1),nruns);
-% % Rrs2 = Rrs2*pi;
-
-% Rrs = [Rrs1 Rrs2];
+Rrs = [Rrs1 Rrs2];
+Rrs = Rrs*pi;
 
 % figure
 % fs = 15;
@@ -473,7 +476,7 @@ LUTconcpond = LUTconc(rule2,:);
 Inputpond = c{1}(rule2);
 DPFpond = c{5}(rule2);
 
-WhichLUT = 0;
+WhichLUT = 1;
 
 switch WhichLUT
     case 0
@@ -520,7 +523,7 @@ end
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUTused)
+plot(L8bands,LUTused./pi)
 title('Reflectance LUT from HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
@@ -666,31 +669,30 @@ disp('Routine finished Successfully')
 InputType = zeros(size(IMatrix,1),1);
 DPFType = zeros(size(IMatrix,1),1);
 
-
 for index = 1:size(IMatrix,1) 
-    if strcmp(Input(IMatrix(index)),'input140408ONTNS')
+    if strcmp(Inputused(IMatrix(index)),'input140408ONTNS')
         InputType(index)= 1;
-    elseif strcmp(Input(IMatrix(index)),'input140408LONGS')
+    elseif strcmp(Inputused(IMatrix(index)),'input140408LONGS')
         InputType(index)= 2;     
     end
         
-    if strcmp(DPF(IMatrix(index)),'FFbb005.dpf')
+    if strcmp(DPFused(IMatrix(index)),'FFbb005.dpf')
         DPFType(index)= 0.5;
-    elseif strcmp(DPF(IMatrix(index)),'FFbb006.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb006.dpf')
         DPFType(index)= 0.6; 
-    elseif strcmp(DPF(IMatrix(index)),'FFbb007.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb007.dpf')
         DPFType(index)= 0.7;
-    elseif strcmp(DPF(IMatrix(index)),'FFbb008.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb008.dpf')
         DPFType(index)= 0.8;
-    elseif strcmp(DPF(IMatrix(index)),'FFbb009.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb009.dpf')
         DPFType(index)= 0.9;
-    elseif strcmp(DPF(IMatrix(index)),'FFbb010.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb010.dpf')
         DPFType(index)= 1.0; 
-    elseif strcmp(DPF(IMatrix(index)),'FFbb012.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb012.dpf')
         DPFType(index)= 1.2;
-    elseif strcmp(DPF(IMatrix(index)),'FFbb014.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb014.dpf')
         DPFType(index)= 1.4;
-    elseif strcmp(DPF(IMatrix(index)),'FFbb016.dpf')
+    elseif strcmp(DPFused(IMatrix(index)),'FFbb016.dpf')
         DPFType(index)= 1.6;
     end
 end
@@ -729,8 +731,8 @@ rule6 = strcmp(Inputused(:),'input140408LONGS')&...
     LUTconcused(:,1)==110 & LUTconcused(:,2)==45 &...
     LUTconcused(:,3)==1.2;
 
-% LongS = [0.009494 0.014197 0.032298 0.020612 ...
-%     0.009200 0.000870 0.000533];
+LongS = [0.009494 0.014197 0.032298 0.020612 ...
+    0.009200 0.000870 0.000533];
 
 % LongS = [0.010427 0.015314 0.032556 0.020807 ...
 %     0.009461 0.001035 0.000651];
@@ -738,8 +740,8 @@ rule6 = strcmp(Inputused(:),'input140408LONGS')&...
 % LongS = [0.003286 0.004843 0.010526 0.006787 ...
 %           0.003129 0.000323 0.000214]; % LONGN Rrs
       
-LongS = [0.002991 0.004547 0.010292 0.006556 ...
-            0.002935 0.000281 0.000176];  % LONGS Rrs
+% LongS = [0.002991 0.004547 0.010292 0.006556 ...
+%             0.002935 0.000281 0.000176];  % LONGS Rrs
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongS).^2,2)));
@@ -754,28 +756,27 @@ LongSconcret = XResults(I,:);
 figure 
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUTused(rule6,:)')
+plot(L8bands,LongS,'.-g')
 hold on
-% plot(L8bands,LongS,'.-k')
 plot(L8bands,waterpixels(I,:),'.-r')
 plot(L8bands,LUTused(IMatrix(I),:),'.-b')
+plot(L8bands,LUTused(rule6,:)','k')
 title('LongS','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
-% legend('FFbb005.dpf','FFbb010.dpf','FFbb014.dpf','FFbb020.dpf','FFbb003.dpf',...
-%     'FFbb004.dpf','FFbb005.dpf','FFbb006.dpf','FFbb007.dpf','LongS ELM','Retrieved');
+legend('Field','Rrs','ret. from HL','DPF LUT')
 
 %% Find Cranb
 rule6 = strcmp(Inputused(:),'input140408LONGS')&...
     LUTconcused(:,1)==60 & LUTconcused(:,2)==25 &...
     LUTconcused(:,3)==1.00;
 
-% Cranb = [0.010979 0.017012 0.044860 ...
-%     0.025397 0.007961 0.001144 0.000468];
+Cranb = [0.010979 0.017012 0.044860 ...
+    0.025397 0.007961 0.001144 0.000468];
 
-Cranb = [ 0.003640 0.005506 0.014292 0.008114 ...
-           0.002373 0.000267 0.000190]; % in Rrs
+% Cranb = [ 0.003640 0.005506 0.014292 0.008114 ...
+%            0.002373 0.000267 0.000190]; % in Rrs
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*Cranb).^2,2)));
@@ -790,17 +791,16 @@ Cranbconcret = XResults(I,:);
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUTused(rule6,:)')
+plot(L8bands,Cranb,'.-g')
 hold on
-% plot(L8bands,LongS,'.-k')
 plot(L8bands,waterpixels(I,:),'.-r')
 plot(L8bands,LUTused(IMatrix(I),:),'.-b')
+plot(L8bands,LUTused(rule6,:)','k')
 title('Cranb','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
-legend('FFbb005.dpf','FFbb010.dpf','FFbb014.dpf','FFbb020.dpf','FFbb003.dpf',...
-    'FFbb004.dpf','FFbb005.dpf','FFbb006.dpf','FFbb007.dpf','OntOS ELM','Retrieved');
+legend('Field','Rrs','ret. from HL','DPF LUT')
 
 %% Find OntOS
 % rule6 = strcmp(c{1}(:),'input140408ONTNS')&...
@@ -831,17 +831,16 @@ OntOSconcret = XResults(I,:);
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUTused(rule6,:)')
+plot(L8bands,OntOS,'-g')
 hold on
 plot(L8bands,waterpixels(I,:),'.-r')
 plot(L8bands,LUTused(IMatrix(I),:),'.-b')
-plot(L8bands,OntOS,'-g')
+plot(L8bands,LUTused(rule6,:)','k')
 title('OntOS','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
-legend('FFbb005.dpf','FFbb010.dpf','FFbb014.dpf','FFbb020.dpf','FFbb003.dpf',...
-    'FFbb004.dpf','FFbb005.dpf','FFbb006.dpf','FFbb007.dpf','OntOS ELM','Retrieved');
+legend('Field','Rrs','ret. from HL','DPF LUT')
 
 
 %% Find OntNS
@@ -849,11 +848,11 @@ rule6 = strcmp(Inputused,'input140408ONTNS')&...
     LUTconcused(:,1)==0.5 & LUTconcused(:,2)==2.0 &...
     LUTconcused(:,3)==0.11;
 
-% OntNS = [0.012930 0.019153 0.021296 0.004983 ...
-%     0.000745 0.000520 0.000194];
-
-OntNS = [ 0.003355  0.004671  0.004345  0.000874 ...
-          0.000042 -0.000003  0.000006 ]; % in Rrs
+OntNS = [0.012930 0.019153 0.021296 0.004983 ...
+    0.000745 0.000520 0.000194];
+% 
+% OntNS = [ 0.003355  0.004671  0.004345  0.000874 ...
+%           0.000042 -0.000003  0.000006 ]; % in Rrs
 
 
 % find LongS in waterpixels with index I
@@ -869,27 +868,25 @@ OntNSconcret = XResults(I,:);
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUTused(rule6,:)')
+plot(L8bands,OntNS,'-g')
 hold on
-% plot(L8bands,LongS,'.-k')
 plot(L8bands,waterpixels(I,:),'.-r')
 plot(L8bands,LUTused(IMatrix(I),:),'.-b')
+plot(L8bands,LUTused(rule6,:)','k')
 title('OntNS','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
-legend('FFbb005.dpf','FFbb010.dpf','FFbb014.dpf','FFbb020.dpf','FFbb003.dpf',...
-    'FFbb004.dpf','FFbb005.dpf','FFbb006.dpf','FFbb007.dpf','OntOS ELM','Retrieved');
-
+legend('Field','Rrs','ret. from HL','DPF LUT')
 
 
 %% Scatter plot
 
 fs = 25;
-ms = 25; %marker size
+ms = 15; %marker size
 
 figure
-% subplot(1,3,1)
+subplot(1,3,1)
 set(gcf,'color','white')
 plot(LongSconc(1),LongSconcret(1),'.r','MarkerSize', ms);
 hold on
@@ -907,8 +904,8 @@ xlabel('measured','fontsize',fs)
 ylabel('retrieved','fontsize',fs)
 legend('LongS','Cranb','OntOS','OntNS')
 
-figure
-% subplot(1,3,2)
+% figure
+subplot(1,3,2)
 set(gcf,'color','white')
 plot(LongSconc(2),LongSconcret(2),'.r','MarkerSize', ms);
 hold on
@@ -924,10 +921,10 @@ title('<TSS>, [mg/L]','fontsize',fs)
 set(gca,'fontsize',fs)
 xlabel('measured','fontsize',fs)
 ylabel('retrieved','fontsize',fs)
-legend('LongS','Cranb','OntOS','OntNS')
+% legend('LongS','Cranb','OntOS','OntNS')
 
-% subplot(1,3,3)
-figure
+subplot(1,3,3)
+% figure
 set(gcf,'color','white')
 plot(LongSconc(3),LongSconcret(3),'.r','MarkerSize', ms);
 hold on
@@ -944,7 +941,7 @@ set(gca,'fontsize',fs)
 xlabel('measured','fontsize',fs)
 ylabel('retrieved','fontsize',fs)
 
-legend('LongS','Cranb','OntOS','OntNS')
+% legend('LongS','Cranb','OntOS','OntNS')
 
 
 
@@ -1006,42 +1003,109 @@ set(gca,'fontsize',fs)
 axis equal
 axis image
 axis off
-
+%% RS of ENVIRONMENT PAPER FIGURES
+%% CHL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure
+fs = 16;
+ms = 16;
 set(gcf,'color','white')
 imagesc(CHLmap)
-title('<CHL>, \mug/L','fontsize',fs)
 set(gca,'fontsize',fs)
 axis equal
 axis image
 axis off
-colormap('gray')
 h = colorbar;
-set(h,'fontsize',cbfs)
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .05 .6 .05])
+title(h,'L8 retrieved <Chl> [\mug/L]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
+%%
+figure
+fs = 20;
+ms = 25;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(LongSconc(1),LongSconcret(1),'.r','MarkerSize', ms);
+hold on
+plot(Cranbconc(1),Cranbconcret(1),'.k','MarkerSize', ms);
+plot(OntOSconc(1),OntOSconcret(1),'.b','MarkerSize', ms);
+plot(OntNSconc(1),OntNSconcret(1),'.g','MarkerSize', ms);
+maxconcChl = 200;
+plot([0 maxconcChl],[0 maxconcChl],'--k')
+axis equal
+ylim([0 maxconcChl])
+xlim([0 maxconcChl])
+xlabel('measured <Chl> [\mug/L] ','fontsize',fs)
+ylabel('L8 retrieved <Chl> [\mug/L]','fontsize',fs)
+legend('LongS','Cranb','OntOS','OntNS')
 
+% save('CHL.txt','-ascii','-double','-tabs','CHLmap')
+%% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure
 set(gcf,'color','white')
 imagesc(SMmap)
-title('<TSS>, mg/L','fontsize',fs)
 set(gca,'fontsize',fs)
 axis equal
 axis image
 axis off
-colormap('gray')
 h = colorbar;
-set(h,'fontsize',cbfs)
-
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .05 .6 .05])
+title(h,'L8 retrieved <TSS> [mg/L]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
+%%
+figure
+fs = 20;
+ms = 25;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(LongSconc(2),LongSconcret(2),'.r','MarkerSize', ms);
+hold on
+plot(Cranbconc(2),Cranbconcret(2),'.k','MarkerSize', ms);
+plot(OntOSconc(2),OntOSconcret(2),'.b','MarkerSize', ms);
+plot(OntNSconc(2),OntNSconcret(2),'.g','MarkerSize', ms);
+maxconcTSS = 60;
+plot([0 maxconcTSS],[0 maxconcTSS],'--k')
+axis equal
+ylim([0 maxconcTSS])
+xlim([0 maxconcTSS])
+xlabel('measured <TSS> [mg/L] ','fontsize',fs)
+ylabel('L8 retrieved <TSS> [m/L]','fontsize',fs)
+legend('LongS','Cranb','OntOS','OntNS')
+% save('TSS.txt','-ascii','-double','-tabs','SMmap')
+%% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure
 set(gcf,'color','white')
 imagesc(CDOMmap)
-title('a_{CDOM}(440), 1/m','fontsize',fs)
 set(gca,'fontsize',fs)
 axis equal
 axis image
 axis off
-colormap('gray')
 h = colorbar;
-set(h,'fontsize',cbfs)
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .05 .65 .05])
+title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
+%%
+figure
+fs = 20;
+ms = 25;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(LongSconc(3),LongSconcret(3),'.r','MarkerSize', ms);
+hold on
+plot(Cranbconc(3),Cranbconcret(3),'.k','MarkerSize', ms);
+plot(OntOSconc(3),OntOSconcret(3),'.b','MarkerSize', ms);
+plot(OntNSconc(3),OntNSconcret(3),'.g','MarkerSize', ms);
+maxconcCDOM = 1.5;
+plot([0 maxconcCDOM],[0 maxconcCDOM],'--k')
+axis equal
+ylim([0 maxconcCDOM])
+xlim([0 maxconcCDOM])
+xlabel('measured a_{CDOM}(440nm) [1/m]','fontsize',fs)
+ylabel('retrieved a_{CDOM}(440nm) [1/m]','fontsize',fs)
+legend('LongS','Cranb','OntOS','OntNS')
+% save('CDOM.txt','-ascii','-double','-tabs','CDOMmap')
 %% Plot Input (ONTNS or LONGS) and DPFs retrieved
 figure
 subplot(1,2,1)

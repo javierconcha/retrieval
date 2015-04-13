@@ -13,6 +13,8 @@ filepath = [folderpath filename];
 [imL8crop, cmap] = imread(filepath);
 INFO = imfinfo(filepath);
 
+imL8crop = imL8crop./pi; % in Rrs
+
 %%%% Mask
 % imL8cropmask = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONmaskmin0p5resampled.tif');
@@ -83,9 +85,9 @@ figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,meanwp,'k')
-title('Reflectance water L8 image','fontsize',fs)
+title('Remote-sensing reflectance water L8 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 hold on
 plot(L8bands,meanwp+stdwp,'g')
@@ -167,9 +169,9 @@ figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixels')
-title('Reflectance water L8 image','fontsize',fs)
+title('Remote-sensing reflectance water L8 image','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.18])
  hold on
@@ -249,7 +251,7 @@ fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixels_neg')
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 str = sprintf('Curves with negatives values in Band %i',bn);
 title(str,'fontsize',fs)
@@ -279,10 +281,10 @@ figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixels(waterpixels(:,bn)<meanwp(bn)+2*stdwp(bn),:)')
-str = sprintf('Reflectance water L8 image with low values band %i',bn);
+str = sprintf('Remote-sensing reflectance water L8 image with low values band %i',bn);
 title(str,'fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.18])
 hold on
@@ -292,10 +294,10 @@ figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixels(waterpixels(:,bn)>meanwp(bn)+2*stdwp(bn),:)')
-str = sprintf('Reflectance water L8 image with high values band %i',bn);
+str = sprintf('Remote-sensing reflectance water L8 image with high values band %i',bn);
 title(str,'fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.18])
 hold on
@@ -322,27 +324,28 @@ figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixels(waterpixels(:,5)>waterpixels(:,3),:)')
-str = sprintf('Reflectance water L8 image with high values band %i',bn);
+str = sprintf('Remote-sensing reflectance water L8 image with high values band %i',bn);
 title(str,'fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 % ylim([0 0.18])
 hold on
 plot(L8bands,meanwp+stdwp,'g','linewidth',2)
 
 %% Pixels para incluir en el IGARSS14 abstract
-% water pixels reflectance
+% water pixels Remote-sensing reflectance
 waterpixelsamples = waterpixels(1:30:end,:);
 figure
 fs = 15;
 set(gcf,'color','white')
 plot(L8bands,waterpixelsamples(waterpixelsamples(:,5)<waterpixelsamples(:,3),:)')
-str = sprintf('Reflectance water pixels L8');
+str = sprintf('Remote-sensing reflectance water pixels L8');
 title(str,'fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
+grid on
 % ylim([0 .25])
 
 % water pixels Radiance
@@ -436,7 +439,7 @@ nruns = size(rr2,1)/size(wavelength,1);
 Rrs2 = reshape(rr2(:,1),size(wavelength,1),nruns);
 
 Rrs = [Rrs1 Rrs2];
-Rrs = Rrs*pi;
+% Rrs = Rrs.*pi;
 
 % figure
 % fs = 15;
@@ -444,7 +447,7 @@ Rrs = Rrs*pi;
 % plot(wavelength,Rrs)
 % title('Rrs','fontsize',fs)
 % xlabel('wavelength [\mum]','fontsize',fs)
-% ylabel('reflectance','fontsize',fs)
+% ylabel('R_{rs} [1/sr]','fontsize',fs)
 % set(gca,'fontsize',fs)
 % xlim([0.4 2.2])
 % ylim([0 .2])
@@ -523,11 +526,12 @@ end
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(L8bands,LUTused./pi)
-title('Reflectance LUT from HydroLight','fontsize',fs)
-xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
 set(gca,'fontsize',fs)
+plot(L8bands,LUTused)
+title('Remote-sensing reflectance LUT from HydroLight','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
+grid on
 %% Create for ENVI library
 % % C = {c{1}(rule1|rule2) cellstr(num2str(LUTconc(rule1|rule2,:))) c{5}(rule1|rule2)};
 % C = {char(c{1}(rule5|rule2)) ...
@@ -733,15 +737,7 @@ rule6 = strcmp(Inputused(:),'input140408LONGS')&...
 
 LongS = [0.009494 0.014197 0.032298 0.020612 ...
     0.009200 0.000870 0.000533];
-
-% LongS = [0.010427 0.015314 0.032556 0.020807 ...
-%     0.009461 0.001035 0.000651];
-
-% LongS = [0.003286 0.004843 0.010526 0.006787 ...
-%           0.003129 0.000323 0.000214]; % LONGN Rrs
-      
-% LongS = [0.002991 0.004547 0.010292 0.006556 ...
-%             0.002935 0.000281 0.000176];  % LONGS Rrs
+LongS = LongS./pi;
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongS).^2,2)));
@@ -763,9 +759,10 @@ plot(L8bands,LUTused(IMatrix(I),:),'.-b')
 plot(L8bands,LUTused(rule6,:)','k')
 title('LongS','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
+grid on
 
 %% Find Cranb
 rule6 = strcmp(Inputused(:),'input140408LONGS')&...
@@ -774,9 +771,7 @@ rule6 = strcmp(Inputused(:),'input140408LONGS')&...
 
 Cranb = [0.010979 0.017012 0.044860 ...
     0.025397 0.007961 0.001144 0.000468];
-
-% Cranb = [ 0.003640 0.005506 0.014292 0.008114 ...
-%            0.002373 0.000267 0.000190]; % in Rrs
+Cranb = Cranb./pi;
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*Cranb).^2,2)));
@@ -798,25 +793,19 @@ plot(L8bands,LUTused(IMatrix(I),:),'.-b')
 plot(L8bands,LUTused(rule6,:)','k')
 title('Cranb','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
-
+grid on
 %% Find OntOS
-% rule6 = strcmp(c{1}(:),'input140408ONTNS')&...
-%     LUTconc(:,1)==1.0 & LUTconc(:,2)==1.0 &...
-%     LUTconc(:,3)==0.21;
-
 rule6 = strcmp(Inputused(:),'input140408ONTNS')&...
     LUTconcused(:,1)==1.0 & LUTconcused(:,2)==1.0 &...
     LUTconcused(:,3)==0.21;
 
-% OntOS = [0.010809  0.014465  0.013691  ...
-%     0.003076 -0.000265  0.000113 -0.000050];
 
 OntOS = [ 0.007588 0.010373 0.008942 0.002004 ...
-			 0.000197 0.000113 0.000057]; % ONTOS  Rrs
-
+			 0.000197 0.000113 0.000057]; 
+OntOS = OntOS./pi;        
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntOS).^2,2)));
@@ -838,11 +827,10 @@ plot(L8bands,LUTused(IMatrix(I),:),'.-b')
 plot(L8bands,LUTused(rule6,:)','k')
 title('OntOS','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
-
-
+grid on
 %% Find OntNS
 rule6 = strcmp(Inputused,'input140408ONTNS')&...
     LUTconcused(:,1)==0.5 & LUTconcused(:,2)==2.0 &...
@@ -850,10 +838,7 @@ rule6 = strcmp(Inputused,'input140408ONTNS')&...
 
 OntNS = [0.012930 0.019153 0.021296 0.004983 ...
     0.000745 0.000520 0.000194];
-% 
-% OntNS = [ 0.003355  0.004671  0.004345  0.000874 ...
-%           0.000042 -0.000003  0.000006 ]; % in Rrs
-
+OntNS = OntNS./pi;
 
 % find LongS in waterpixels with index I
 [~,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntNS).^2,2)));
@@ -875,17 +860,16 @@ plot(L8bands,LUTused(IMatrix(I),:),'.-b')
 plot(L8bands,LUTused(rule6,:)','k')
 title('OntNS','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
-ylabel('reflectance','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
-
-
+grid on
 %% Scatter plot
 
 fs = 25;
 ms = 15; %marker size
 
-figure
+figure('Position',get(0,'ScreenSize'))
 subplot(1,3,1)
 set(gcf,'color','white')
 plot(LongSconc(1),LongSconcret(1),'.r','MarkerSize', ms);
@@ -895,9 +879,9 @@ plot(OntOSconc(1),OntOSconcret(1),'.b','MarkerSize', ms);
 plot(OntNSconc(1),OntNSconcret(1),'.g','MarkerSize', ms);
 maxconcChl = 160;
 plot([0 maxconcChl],[0 maxconcChl],'k')
+axis equal
 ylim([0 maxconcChl])
 xlim([0 maxconcChl])
-axis equal
 title('<Chl>, [\mug/L]','fontsize',fs)
 set(gca,'fontsize',fs)
 xlabel('measured','fontsize',fs)
@@ -914,9 +898,9 @@ plot(OntOSconc(2),OntOSconcret(2),'.b','MarkerSize', ms);
 plot(OntNSconc(2),OntNSconcret(2),'.g','MarkerSize', ms);
 maxconcTSS = 60;
 plot([0 maxconcTSS],[0 maxconcTSS],'k')
+axis equal
 ylim([0 maxconcTSS])
 xlim([0 maxconcTSS])
-axis equal
 title('<TSS>, [mg/L]','fontsize',fs)
 set(gca,'fontsize',fs)
 xlabel('measured','fontsize',fs)
@@ -933,9 +917,9 @@ plot(OntOSconc(3),OntOSconcret(3),'.b','MarkerSize', ms);
 plot(OntNSconc(3),OntNSconcret(3),'.g','MarkerSize', ms);
 maxconcCDOM = 1.5;
 plot([0 maxconcCDOM],[0 maxconcCDOM],'k')
+axis equal
 ylim([0 maxconcCDOM])
 xlim([0 maxconcCDOM])
-axis equal
 title('a_{CDOM}(440nm), [1/m]','fontsize',fs)
 set(gca,'fontsize',fs)
 xlabel('measured','fontsize',fs)
@@ -1017,8 +1001,9 @@ axis off
 h = colorbar;
 set(h,'fontsize',fs,'Location','southoutside')
 set(h,'Position',[.2 .05 .6 .05])
-title(h,'L8 retrieved <Chl> [\mug/L]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
+title(h,'L8 retrieved C_a [mg m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.03 1 1])
+
 %%
 figure
 fs = 20;
@@ -1035,9 +1020,12 @@ plot([0 maxconcChl],[0 maxconcChl],'--k')
 axis equal
 ylim([0 maxconcChl])
 xlim([0 maxconcChl])
-xlabel('measured <Chl> [\mug/L] ','fontsize',fs)
-ylabel('L8 retrieved <Chl> [\mug/L]','fontsize',fs)
-legend('LongS','Cranb','OntOS','OntNS')
+xlabel('measured C_a [mg m^{-3}] ','fontsize',fs,'Position',[110 -20])
+ylabel('L8 retrieved C_a [mg m^{-3}]','fontsize',fs)
+legend('LongS','Cranb','OntOS','OntNS','Location','best')
+% get current (active) axes property
+% Pos = get(gca,'OuterPosition');  OuterPosition = [left bottom width height]
+set(gca,'OuterPosition',[0 0.05 1 1])
 
 % save('CHL.txt','-ascii','-double','-tabs','CHLmap')
 %% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1051,7 +1039,7 @@ axis off
 h = colorbar;
 set(h,'fontsize',fs,'Location','southoutside')
 set(h,'Position',[.2 .05 .6 .05])
-title(h,'L8 retrieved <TSS> [mg/L]','FontSize',fs)
+title(h,'L8 retrieved TSS [g m^{-3}]','FontSize',fs)
 set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
 %%
 figure
@@ -1069,8 +1057,8 @@ plot([0 maxconcTSS],[0 maxconcTSS],'--k')
 axis equal
 ylim([0 maxconcTSS])
 xlim([0 maxconcTSS])
-xlabel('measured <TSS> [mg/L] ','fontsize',fs)
-ylabel('L8 retrieved <TSS> [m/L]','fontsize',fs)
+xlabel('measured TSS [g m^{-3}] ','fontsize',fs)
+ylabel('L8 retrieved TSS [g m^{-3}]','fontsize',fs)
 legend('LongS','Cranb','OntOS','OntNS')
 % save('TSS.txt','-ascii','-double','-tabs','SMmap')
 %% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

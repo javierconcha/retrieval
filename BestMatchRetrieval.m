@@ -2,6 +2,11 @@ function [XResults,IMatrix] = BestMatchRetrieval(waterpixels,LUT,LUTconc)
 %% Best Match
 tic
 
+if size(LUT,1)~=size(LUTconc,1)
+    disp('LUT and LUTconc different size!')
+    return
+end
+
 matlabpool open 4
 
 parfor index = 1:size(waterpixels,1)

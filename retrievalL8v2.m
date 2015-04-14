@@ -746,8 +746,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-LongSconc = [112.76 46 1.1953];
-LongSconcret = XResults(I,:);
+LongSconc130919 = [112.76 46 1.1953];
+LongSconc130919ret = XResults(I,:);
 
 figure 
 fs = 15;
@@ -780,8 +780,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-Cranbconc = [64.08 26.7 1.0433];
-Cranbconcret = XResults(I,:);
+Cranbconc130919 = [64.08 26.7 1.0433];
+Cranbconc130919ret = XResults(I,:);
 
 figure
 fs = 15;
@@ -814,8 +814,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-OntOSconc = [0.96 1.0 0.2188];
-OntOSconcret = XResults(I,:);
+OntOSconc130919 = [0.96 1.0 0.2188];
+OntOSconc130919ret = XResults(I,:);
 
 figure
 fs = 15;
@@ -847,8 +847,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-OntNSconc = [0.48 1.6 0.1152];
-OntNSconcret = XResults(I,:);
+OntNSconc130919 = [0.48 1.6 0.1152];
+OntNSconc130919ret = XResults(I,:);
 
 figure
 fs = 15;
@@ -872,11 +872,11 @@ ms = 15; %marker size
 figure('Position',get(0,'ScreenSize'))
 subplot(1,3,1)
 set(gcf,'color','white')
-plot(LongSconc(1),LongSconcret(1),'.r','MarkerSize', ms);
+plot(LongSconc130919(1),LongSconc130919ret(1),'.r','MarkerSize', ms);
 hold on
-plot(Cranbconc(1),Cranbconcret(1),'.k','MarkerSize', ms);
-plot(OntOSconc(1),OntOSconcret(1),'.b','MarkerSize', ms);
-plot(OntNSconc(1),OntNSconcret(1),'.g','MarkerSize', ms);
+plot(Cranbconc130919(1),Cranbconc130919ret(1),'.k','MarkerSize', ms);
+plot(OntOSconc130919(1),OntOSconc130919ret(1),'.b','MarkerSize', ms);
+plot(OntNSconc130919(1),OntNSconc130919ret(1),'.g','MarkerSize', ms);
 maxconcChl = 160;
 plot([0 maxconcChl],[0 maxconcChl],'k')
 axis equal
@@ -891,11 +891,11 @@ legend('LongS','Cranb','OntOS','OntNS')
 % figure
 subplot(1,3,2)
 set(gcf,'color','white')
-plot(LongSconc(2),LongSconcret(2),'.r','MarkerSize', ms);
+plot(LongSconc130919(2),LongSconc130919ret(2),'.r','MarkerSize', ms);
 hold on
-plot(Cranbconc(2),Cranbconcret(2),'.k','MarkerSize', ms);
-plot(OntOSconc(2),OntOSconcret(2),'.b','MarkerSize', ms);
-plot(OntNSconc(2),OntNSconcret(2),'.g','MarkerSize', ms);
+plot(Cranbconc130919(2),Cranbconc130919ret(2),'.k','MarkerSize', ms);
+plot(OntOSconc130919(2),OntOSconc130919ret(2),'.b','MarkerSize', ms);
+plot(OntNSconc130919(2),OntNSconc130919ret(2),'.g','MarkerSize', ms);
 maxconcTSS = 60;
 plot([0 maxconcTSS],[0 maxconcTSS],'k')
 axis equal
@@ -910,11 +910,11 @@ ylabel('retrieved','fontsize',fs)
 subplot(1,3,3)
 % figure
 set(gcf,'color','white')
-plot(LongSconc(3),LongSconcret(3),'.r','MarkerSize', ms);
+plot(LongSconc130919(3),LongSconc130919ret(3),'.r','MarkerSize', ms);
 hold on
-plot(Cranbconc(3),Cranbconcret(3),'.k','MarkerSize', ms);
-plot(OntOSconc(3),OntOSconcret(3),'.b','MarkerSize', ms);
-plot(OntNSconc(3),OntNSconcret(3),'.g','MarkerSize', ms);
+plot(Cranbconc130919(3),Cranbconc130919ret(3),'.k','MarkerSize', ms);
+plot(OntOSconc130919(3),OntOSconc130919ret(3),'.b','MarkerSize', ms);
+plot(OntNSconc130919(3),OntNSconc130919ret(3),'.g','MarkerSize', ms);
 maxconcCDOM = 1.5;
 plot([0 maxconcCDOM],[0 maxconcCDOM],'k')
 axis equal
@@ -1001,31 +1001,27 @@ axis off
 h = colorbar;
 set(h,'fontsize',fs,'Location','southoutside')
 set(h,'Position',[.2 .05 .6 .05])
-title(h,'L8 retrieved C_a [mg m^{-3}]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 0.03 1 1])
-
+title(h,'L8 retrieved Ca [mg m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
 %%
 figure
 fs = 20;
 ms = 25;
 set(gcf,'color','white')
 set(gca,'fontsize',fs)
-plot(LongSconc(1),LongSconcret(1),'.r','MarkerSize', ms);
+plot(LongSconc130919(1),LongSconc130919ret(1),'.r','MarkerSize', ms);
 hold on
-plot(Cranbconc(1),Cranbconcret(1),'.k','MarkerSize', ms);
-plot(OntOSconc(1),OntOSconcret(1),'.b','MarkerSize', ms);
-plot(OntNSconc(1),OntNSconcret(1),'.g','MarkerSize', ms);
+plot(Cranbconc130919(1),Cranbconc130919ret(1),'.k','MarkerSize', ms);
+plot(OntOSconc130919(1),OntOSconc130919ret(1),'.b','MarkerSize', ms);
+plot(OntNSconc130919(1),OntNSconc130919ret(1),'.g','MarkerSize', ms);
 maxconcChl = 200;
 plot([0 maxconcChl],[0 maxconcChl],'--k')
 axis equal
 ylim([0 maxconcChl])
 xlim([0 maxconcChl])
-xlabel('measured C_a [mg m^{-3}] ','fontsize',fs,'Position',[110 -20])
-ylabel('L8 retrieved C_a [mg m^{-3}]','fontsize',fs)
-legend('LongS','Cranb','OntOS','OntNS','Location','best')
-% get current (active) axes property
-% Pos = get(gca,'OuterPosition');  OuterPosition = [left bottom width height]
-set(gca,'OuterPosition',[0 0.05 1 1])
+xlabel('measured Ca [mg m^{-3}] ','fontsize',fs)
+ylabel('L8 retrieved Ca [mg m^{-3}]','fontsize',fs)
+legend('LongS','Cranb','OntOS','OntNS')
 
 % save('CHL.txt','-ascii','-double','-tabs','CHLmap')
 %% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1047,11 +1043,11 @@ fs = 20;
 ms = 25;
 set(gcf,'color','white')
 set(gca,'fontsize',fs)
-plot(LongSconc(2),LongSconcret(2),'.r','MarkerSize', ms);
+plot(LongSconc130919(2),LongSconc130919ret(2),'.r','MarkerSize', ms);
 hold on
-plot(Cranbconc(2),Cranbconcret(2),'.k','MarkerSize', ms);
-plot(OntOSconc(2),OntOSconcret(2),'.b','MarkerSize', ms);
-plot(OntNSconc(2),OntNSconcret(2),'.g','MarkerSize', ms);
+plot(Cranbconc130919(2),Cranbconc130919ret(2),'.k','MarkerSize', ms);
+plot(OntOSconc130919(2),OntOSconc130919ret(2),'.b','MarkerSize', ms);
+plot(OntNSconc130919(2),OntNSconc130919ret(2),'.g','MarkerSize', ms);
 maxconcTSS = 60;
 plot([0 maxconcTSS],[0 maxconcTSS],'--k')
 axis equal
@@ -1080,11 +1076,11 @@ fs = 20;
 ms = 25;
 set(gcf,'color','white')
 set(gca,'fontsize',fs)
-plot(LongSconc(3),LongSconcret(3),'.r','MarkerSize', ms);
+plot(LongSconc130919(3),LongSconc130919ret(3),'.r','MarkerSize', ms);
 hold on
-plot(Cranbconc(3),Cranbconcret(3),'.k','MarkerSize', ms);
-plot(OntOSconc(3),OntOSconcret(3),'.b','MarkerSize', ms);
-plot(OntNSconc(3),OntNSconcret(3),'.g','MarkerSize', ms);
+plot(Cranbconc130919(3),Cranbconc130919ret(3),'.k','MarkerSize', ms);
+plot(OntOSconc130919(3),OntOSconc130919ret(3),'.b','MarkerSize', ms);
+plot(OntNSconc130919(3),OntNSconc130919ret(3),'.g','MarkerSize', ms);
 maxconcCDOM = 1.5;
 plot([0 maxconcCDOM],[0 maxconcCDOM],'--k')
 axis equal

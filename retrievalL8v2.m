@@ -10,6 +10,8 @@ filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
 % filename = 'LC80160302013262LGN00_ONelm140629.tif'; % corrected with Rrs
 filepath = [folderpath filename];
 
+clear imL8crop imL8cropRGB maskRGB; % if other retrieval's variables are in Workspace
+
 [imL8crop, cmap] = imread(filepath);
 INFO = imfinfo(filepath);
 

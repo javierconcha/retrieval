@@ -10,6 +10,8 @@ filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
 % filename = 'LC80160302013262LGN00_ONelm140629.tif'; % corrected with Rrs
 filepath = [folderpath filename];
 
+date = '130919';
+
 clear imL8crop imL8cropRGB maskRGB; % if other retrieval's variables are in Workspace
 
 [imL8crop, cmap] = imread(filepath);
@@ -364,6 +366,7 @@ grid on
 
 
 %% LUTs from HydroLight
+clear c c1 Rrs LUT LUTconc LUTconcDPF LUTused InputType % if other retrieval's variables are in Workspace
 % new 04/09/14
 % LUTfilename = 'LUTL8140409.txt'; 
 % LUTconcfilename = 'concentration_list140409.txt';
@@ -777,7 +780,7 @@ grid on
 fs = 30;
 ms = 15; %marker size
 
-figure('Position',get(0,'ScreenSize'))
+figure('name',date,'Position',get(0,'ScreenSize'))
 subplot(1,3,1)
 set(gcf,'color','white')
 plot(LongSconc130919(1),LongSconc130919ret(1),'.r','MarkerSize', ms);
@@ -841,7 +844,7 @@ ylabel('retrieved','fontsize',fs)
 fs = 30; % font size
 cbfs = 15; % colorbar font size
 
-figure('Position',get(0,'ScreenSize'))
+figure('name',date,'Position',get(0,'ScreenSize'))
 set(gcf,'color','white')
 subplot(2,2,1)
 imagesc(impos)
@@ -897,7 +900,7 @@ axis image
 axis off
 %% RS of ENVIRONMENT PAPER FIGURES
 %% CHL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure
+figure('name',date)
 fs = 16;
 ms = 16;
 set(gcf,'color','white')
@@ -908,11 +911,11 @@ axis image
 axis off
 h = colorbar;
 set(h,'fontsize',fs,'Location','southoutside')
-set(h,'Position',[.2 .05 .6 .05])
-title(h,'L8 retrieved Ca [mg m^{-3}]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
+set(h,'Position',[.2 .1 .6 .05])
+title(h,'L8 retrieved C_a [mg m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.1 1 1])
 %%
-figure
+figure('name',date)
 fs = 20;
 ms = 25;
 set(gcf,'color','white')
@@ -922,18 +925,20 @@ hold on
 plot(Cranbconc130919(1),Cranbconc130919ret(1),'.k','MarkerSize', ms);
 plot(OntOSconc130919(1),OntOSconc130919ret(1),'.b','MarkerSize', ms);
 plot(OntNSconc130919(1),OntNSconc130919ret(1),'.g','MarkerSize', ms);
-maxconcChl = 200;
+maxconcChl = 150;
 plot([0 maxconcChl],[0 maxconcChl],'--k')
 axis equal
 ylim([0 maxconcChl])
 xlim([0 maxconcChl])
-xlabel('measured Ca [mg m^{-3}] ','fontsize',fs)
-ylabel('L8 retrieved Ca [mg m^{-3}]','fontsize',fs)
-legend('LongS','Cranb','OntOS','OntNS')
+xlabel('measured C_a [mg m^{-3}] ','fontsize',fs)
+ylabel('L8 retrieved C_a [mg m^{-3}]','fontsize',fs)
+legend('LongS','Cranb','OntOS','OntNS','Location','best')
 
 % save('CHL.txt','-ascii','-double','-tabs','CHLmap')
 %% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure
+figure('name',date)
+fs = 16;
+ms = 16;
 set(gcf,'color','white')
 imagesc(SMmap)
 set(gca,'fontsize',fs)
@@ -942,11 +947,11 @@ axis image
 axis off
 h = colorbar;
 set(h,'fontsize',fs,'Location','southoutside')
-set(h,'Position',[.2 .05 .6 .05])
+set(h,'Position',[.2 .13 .6 .05])
 title(h,'L8 retrieved TSS [g m^{-3}]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
+set(gca, 'Units', 'normalized', 'Position', [0 .1 1 1])
 %%
-figure
+figure('name',date)
 fs = 20;
 ms = 25;
 set(gcf,'color','white')
@@ -963,10 +968,12 @@ ylim([0 maxconcTSS])
 xlim([0 maxconcTSS])
 xlabel('measured TSS [g m^{-3}] ','fontsize',fs)
 ylabel('L8 retrieved TSS [g m^{-3}]','fontsize',fs)
-legend('LongS','Cranb','OntOS','OntNS')
+legend('LongS','Cranb','OntOS','OntNS','Location','best')
 % save('TSS.txt','-ascii','-double','-tabs','SMmap')
 %% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure
+figure('name',date)
+fs = 16;
+ms = 16;
 set(gcf,'color','white')
 imagesc(CDOMmap)
 set(gca,'fontsize',fs)
@@ -979,7 +986,7 @@ set(h,'Position',[.2 .05 .65 .05])
 title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
 set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
 %%
-figure
+figure('name',date)
 fs = 20;
 ms = 25;
 set(gcf,'color','white')
@@ -996,7 +1003,7 @@ ylim([0 maxconcCDOM])
 xlim([0 maxconcCDOM])
 xlabel('measured a_{CDOM}(440nm) [1/m]','fontsize',fs)
 ylabel('retrieved a_{CDOM}(440nm) [1/m]','fontsize',fs)
-legend('LongS','Cranb','OntOS','OntNS')
+legend('LongS','Cranb','OntOS','OntNS','Location','best')
 % save('CDOM.txt','-ascii','-double','-tabs','CDOMmap')
 %% Plot Input (ONTNS or LONGS) and DPFs retrieved
 figure

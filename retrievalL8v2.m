@@ -457,14 +457,58 @@ Rrs = [Rrs1 Rrs2];
 
 LUT = spect_sampL8(Rrs,wavelength);
 
+for index = 1:size(LUT,1) 
+    if strcmp(c{5}(index),'FFbb005.dpf')
+        LUTconcDPF(index)= 0.5;
+    elseif strcmp(c{5}(index),'FFbb006.dpf')
+        LUTconcDPF(index)= 0.6; 
+    elseif strcmp(c{5}(index),'FFbb007.dpf')
+        LUTconcDPF(index)= 0.7;
+    elseif strcmp(c{5}(index),'FFbb008.dpf')
+        LUTconcDPF(index)= 0.8;
+    elseif strcmp(c{5}(index),'FFbb009.dpf')
+        LUTconcDPF(index)= 0.9;
+    elseif strcmp(c{5}(index),'FFbb010.dpf')
+        LUTconcDPF(index)= 1.0; 
+    elseif strcmp(c{5}(index),'FFbb012.dpf')
+        LUTconcDPF(index)= 1.2;
+    elseif strcmp(c{5}(index),'FFbb014.dpf')
+        LUTconcDPF(index)= 1.4;
+    elseif strcmp(c{5}(index),'FFbb016.dpf')
+        LUTconcDPF(index)= 1.6;
+    elseif strcmp(c{5}(index),'FFbb018.dpf')
+        LUTconcDPF(index)= 1.8;  
+    elseif strcmp(c{5}(index),'FFbb020.dpf')
+        LUTconcDPF(index)= 2.0;     
+    elseif strcmp(c{5}(index),'FFbb022.dpf')
+        LUTconcDPF(index)= 2.2;      
+    elseif strcmp(c{5}(index),'FFbb024.dpf')
+        LUTconcDPF(index)= 2.4;  
+    elseif strcmp(c{5}(index),'FFbb026.dpf')
+        LUTconcDPF(index)= 2.6;
+    end
+end
+
 % rule5 = strcmp(c{1}(:),'input140408ONTNS')& LUTconc(:,1)<10&LUTconc(:,2)<10&LUTconc(:,3)<0.9 &...
 %     (strcmp(c{5}(:),'FFbb010.dpf')|strcmp(c{5}(:),'FFbb012.dpf'));
 % rule2 = strcmp(c{1}(:),'input140408LONGS')& LUTconc(:,1)>=10&LUTconc(:,2)>=10&LUTconc(:,3)>=0.9&...
 %     (strcmp(c{5}(:),'FFbb005.dpf')|strcmp(c{5}(:),'FFbb006.dpf')|strcmp(c{5}(:),'FFbb007.dpf')...
 %     |strcmp(c{5}(:),'FFbb008.dpf')|strcmp(c{5}(:),'FFbb009.dpf'));
 
-rule5 = strcmp(c{1}(:),'input140408ONTNS')& LUTconc(:,1)<10&LUTconc(:,2)<10&LUTconc(:,3)<0.9;
-rule2 = strcmp(c{1}(:),'input140408LONGS')& LUTconc(:,1)>=10&LUTconc(:,2)>=10&LUTconc(:,3)>=0.9;
+
+CHlimit = 50;
+CHlimitup = 120;
+SMlimit = 25;
+CDlimit = 0.7;
+DPFlimitup = 1.9;
+DPFlimitlo = 0.9;
+
+rule5 = strcmp(c{1}(:),'input140408ONTNS')& ...
+    LUTconc(:,1)<CHlimit & LUTconc(:,2)<SMlimit & LUTconc(:,3)<CDlimit;%& ...
+%     LUTconcDPF(:)<DPFlimitup &LUTconcDPF(:)>DPFlimitlo;
+rule2 = strcmp(c{1}(:),'input140408LONGS')& ...
+    LUTconc(:,1)>=CHlimit & LUTconc(:,1)<CHlimitup & LUTconc(:,2)>=SMlimit & LUTconc(:,3)>=CDlimit;%& ...
+%     LUTconcDPF(:)<DPFlimitup &LUTconcDPF(:)>DPFlimitlo;
 
 LUTsmart = LUT(rule5|rule2,:);
 LUTconcsmart = LUTconc(rule5|rule2,:);
@@ -514,16 +558,6 @@ switch WhichLUT
         
 end
 
-
-
-% rule3 =  strcmp(c{1}(:),'input140408LONGS');
-% LUTLONGS = LUT(rule3,:);
-% LUTconcLONGS = LUTconc(rule3,:);
-% 
-% rule4 =  strcmp(c{1}(:),'input140408ONTNS');
-% LUTONTNS = LUT(rule4,:);
-% LUTconcONTNS = LUTconc(rule4,:);
-
 %% Display LUTsmart
 figure
 fs = 15;
@@ -534,136 +568,8 @@ title('Remote-sensing reflectance LUT from HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('R_{rs} [1/sr]','fontsize',fs)
 grid on
-%% Create for ENVI library
-% % C = {c{1}(rule1|rule2) cellstr(num2str(LUTconc(rule1|rule2,:))) c{5}(rule1|rule2)};
-% C = {char(c{1}(rule5|rule2)) ...
-%     num2str(LUTconc(rule5|rule2,:)) ...
-%     char(c{5}(rule5|rule2))};
-% 
-% C = cellstr(C);
-% 
-% filename = 'file.txt';
-% fid = fopen(filename,'wt');
-% 
-% for index = 1:size(C{1},1)
-% fprintf('%s %s %s\r\n',C{1}(index,:),C{2}(index,:),C{3}(index,:));
-% end
-% fclose(fid);
-% 
-% % tt = [L8bands LUTsmart];
-% save('LUTtest.txt','tt','-ascii')
 
 
-
-%%
-% % %% Test the optimization algorhythm
-% % LUTconc = LUTconc;
-% % CDOMconc = unique(LUTconc(:,3))
-% % SMconc   = unique(LUTconc(:,2))
-% % CHLconc  = unique(LUTconc(:,1))
-% % 
-% % disp('--------------------------------------------------------------------------')
-% % disp('Running Optimization Routine')
-% %     [XResultstest,residual] = opt(LUT(:,1:5),LUT(:,1:5),LUTconc);
-% % disp('Optimization Routine finished Successfully')
-% % 
-% % 
-% % 
-% % 
-% % % E_RMS
-% % disp('--------------------------------------------------')
-% % E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1));
-% % E_Chl = E_Chl*100/68;
-% % str = sprintf('E_Chl  = %2.2f %%',E_Chl);
-% % disp(str)
-% % 
-% % E_SM = sqrt(sum((XResultstest(:,2)-LUTconc(:,2)).^2)/size(XResultstest,1));
-% % E_SM = E_SM*100/24;
-% % str = sprintf('E_SM   = %2.2f %%',E_SM);
-% % disp(str)
-% % 
-% % E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconc(:,3)).^2)/size(XResultstest,1));
-% % E_CDOM = E_CDOM*100/14;
-% % str = sprintf('E_CDOM = %2.2f %%',E_CDOM);
-% % disp(str)
-% % 
-% % %% Residual Histogram
-% % figure
-% % set(gcf,'color','white')
-% % subplot(2,3,1)
-% % hist(residual(:,1))
-% % title('band 1')
-% % 
-% % subplot(2,3,2)
-% % hist(residual(:,2))
-% % title('band 2')
-% % 
-% % subplot(2,3,3)
-% % hist(residual(:,3))
-% % title('band 3')
-% % 
-% % subplot(2,3,4)
-% % hist(residual(:,4))
-% % title('band 4')
-% % 
-% % subplot(2,3,5)
-% % hist(residual(:,5))
-% % title('band 5')
-% % %% Display data vs retrieved
-% % 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(LUTconc(:,1),XResultstest(:,1),'.')
-% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
-% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
-% % hold on
-% % plot(xLimits,xLimits,'k')
-% % ylim(xLimits)
-% % xlim(xLimits)
-% % title('CHL Real vs retrieved','fontsize',fs)
-% % xlabel('real','fontsize',fs)
-% % ylabel('retrieved','fontsize',fs)
-% % set(gca,'fontsize',fs)
-% % axis equal
-% % 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(LUTconc(:,2),XResultstest(:,2),'.')
-% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
-% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
-% % hold on
-% % plot(xLimits,xLimits,'k')
-% % ylim(xLimits)
-% % xlim(xLimits)
-% % title('SM Real vs retrieved','fontsize',fs)
-% % xlabel('real','fontsize',fs)
-% % ylabel('retrieved','fontsize',fs)
-% % set(gca,'fontsize',fs)
-% % axis equal
-% % 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(LUTconc(:,3),XResultstest(:,3),'.')
-% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
-% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
-% % hold on
-% % plot(xLimits,xLimits,'k')
-% % ylim(xLimits)
-% % xlim(xLimits)
-% % title('CDOM Real vs retrieved','fontsize',fs)
-% % xlabel('real','fontsize',fs)
-% % ylabel('retrieved','fontsize',fs)
-% % set(gca,'fontsize',fs)
-% % axis equal
-% % 
-% % %% Retrieval Opt, %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % disp('--------------------------------------------------------------------------')
-% % disp('Running Optimization Routine')
-% %     XResults = opt(waterpixels(:,1:5),LUT(:,1:5),LUTconc);
-% % disp('Optimization Routine finished Successfully')
 
 %% Retrieval Best Match %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('--------------------------------------------------------------------------')
@@ -734,7 +640,7 @@ CDOMmaplog10(CDOMmaplog10==-Inf)=-4;
 
 %% Find LONGS
 rule6 = strcmp(Inputused(:),'input140408LONGS')&...
-    LUTconcused(:,1)==110 & LUTconcused(:,2)==45 &...
+    LUTconcused(:,1)==110 & LUTconcused(:,2)==50 &...
     LUTconcused(:,3)==1.2;
 
 LongS = [0.009494 0.014197 0.032298 0.020612 ...
@@ -748,8 +654,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-LongSconc130919 = [112.76 46 1.1953];
-LongSconc130919ret = XResults(I,:);
+LongSconc130919 = [112.76 46 1.1953]
+LongSconc130919ret = XResults(I,:)
 
 figure 
 fs = 15;
@@ -782,8 +688,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-Cranbconc130919 = [64.08 26.7 1.0433];
-Cranbconc130919ret = XResults(I,:);
+Cranbconc130919 = [64.08 26.7 1.0433]
+Cranbconc130919ret = XResults(I,:)
 
 figure
 fs = 15;
@@ -816,8 +722,8 @@ Inputused(IMatrix(I))
 DPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
-OntOSconc130919 = [0.96 1.0 0.2188];
-OntOSconc130919ret = XResults(I,:);
+OntOSconc130919 = [0.96 1.0 0.2188]
+OntOSconc130919ret = XResults(I,:)
 
 figure
 fs = 15;
@@ -868,7 +774,7 @@ legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
 %% Scatter plot
 
-fs = 25;
+fs = 30;
 ms = 15; %marker size
 
 figure('Position',get(0,'ScreenSize'))
@@ -935,7 +841,7 @@ ylabel('retrieved','fontsize',fs)
 fs = 30; % font size
 cbfs = 15; % colorbar font size
 
-figure
+figure('Position',get(0,'ScreenSize'))
 set(gcf,'color','white')
 subplot(2,2,1)
 imagesc(impos)
@@ -1264,3 +1170,112 @@ colorbar
 axis equal
 axis off
 
+%%
+% % %% Test the optimization algorhythm
+% % LUTconc = LUTconc;
+% % CDOMconc = unique(LUTconc(:,3))
+% % SMconc   = unique(LUTconc(:,2))
+% % CHLconc  = unique(LUTconc(:,1))
+% % 
+% % disp('--------------------------------------------------------------------------')
+% % disp('Running Optimization Routine')
+% %     [XResultstest,residual] = opt(LUT(:,1:5),LUT(:,1:5),LUTconc);
+% % disp('Optimization Routine finished Successfully')
+% % 
+% % 
+% % 
+% % 
+% % % E_RMS
+% % disp('--------------------------------------------------')
+% % E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1));
+% % E_Chl = E_Chl*100/68;
+% % str = sprintf('E_Chl  = %2.2f %%',E_Chl);
+% % disp(str)
+% % 
+% % E_SM = sqrt(sum((XResultstest(:,2)-LUTconc(:,2)).^2)/size(XResultstest,1));
+% % E_SM = E_SM*100/24;
+% % str = sprintf('E_SM   = %2.2f %%',E_SM);
+% % disp(str)
+% % 
+% % E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconc(:,3)).^2)/size(XResultstest,1));
+% % E_CDOM = E_CDOM*100/14;
+% % str = sprintf('E_CDOM = %2.2f %%',E_CDOM);
+% % disp(str)
+% % 
+% % %% Residual Histogram
+% % figure
+% % set(gcf,'color','white')
+% % subplot(2,3,1)
+% % hist(residual(:,1))
+% % title('band 1')
+% % 
+% % subplot(2,3,2)
+% % hist(residual(:,2))
+% % title('band 2')
+% % 
+% % subplot(2,3,3)
+% % hist(residual(:,3))
+% % title('band 3')
+% % 
+% % subplot(2,3,4)
+% % hist(residual(:,4))
+% % title('band 4')
+% % 
+% % subplot(2,3,5)
+% % hist(residual(:,5))
+% % title('band 5')
+% % %% Display data vs retrieved
+% % 
+% % figure
+% % fs = 15;
+% % set(gcf,'color','white')
+% % plot(LUTconc(:,1),XResultstest(:,1),'.')
+% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
+% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
+% % hold on
+% % plot(xLimits,xLimits,'k')
+% % ylim(xLimits)
+% % xlim(xLimits)
+% % title('CHL Real vs retrieved','fontsize',fs)
+% % xlabel('real','fontsize',fs)
+% % ylabel('retrieved','fontsize',fs)
+% % set(gca,'fontsize',fs)
+% % axis equal
+% % 
+% % figure
+% % fs = 15;
+% % set(gcf,'color','white')
+% % plot(LUTconc(:,2),XResultstest(:,2),'.')
+% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
+% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
+% % hold on
+% % plot(xLimits,xLimits,'k')
+% % ylim(xLimits)
+% % xlim(xLimits)
+% % title('SM Real vs retrieved','fontsize',fs)
+% % xlabel('real','fontsize',fs)
+% % ylabel('retrieved','fontsize',fs)
+% % set(gca,'fontsize',fs)
+% % axis equal
+% % 
+% % figure
+% % fs = 15;
+% % set(gcf,'color','white')
+% % plot(LUTconc(:,3),XResultstest(:,3),'.')
+% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
+% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
+% % hold on
+% % plot(xLimits,xLimits,'k')
+% % ylim(xLimits)
+% % xlim(xLimits)
+% % title('CDOM Real vs retrieved','fontsize',fs)
+% % xlabel('real','fontsize',fs)
+% % ylabel('retrieved','fontsize',fs)
+% % set(gca,'fontsize',fs)
+% % axis equal
+% % 
+% % %% Retrieval Opt, %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % disp('--------------------------------------------------------------------------')
+% % disp('Running Optimization Routine')
+% %     XResults = opt(waterpixels(:,1:5),LUT(:,1:5),LUTconc);
+% % disp('Optimization Routine finished Successfully')

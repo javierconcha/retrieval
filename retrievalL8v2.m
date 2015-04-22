@@ -461,7 +461,11 @@ Rrs = [Rrs1 Rrs2];
 LUT = spect_sampL8(Rrs,wavelength);
 
 for index = 1:size(LUT,1) 
-    if strcmp(c{5}(index),'FFbb005.dpf')
+    if strcmp(c{5}(index),'FFbb003.dpf')
+        LUTconcDPF(index)= 0.3;   
+    elseif strcmp(c{5}(index),'FFbb004.dpf')
+        LUTconcDPF(index)= 0.4;
+    elseif strcmp(c{5}(index),'FFbb005.dpf')
         LUTconcDPF(index)= 0.5;
     elseif strcmp(c{5}(index),'FFbb006.dpf')
         LUTconcDPF(index)= 0.6; 
@@ -567,9 +571,10 @@ fs = 15;
 set(gcf,'color','white')
 set(gca,'fontsize',fs)
 plot(L8bands,LUTused)
-title('Remote-sensing reflectance LUT from HydroLight','fontsize',fs)
+% title('Remote-sensing reflectance LUT from HydroLight','fontsize',fs)
 xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('R_{rs} [1/sr]','fontsize',fs)
+xlim([0.4 2.5])
 grid on
 
 

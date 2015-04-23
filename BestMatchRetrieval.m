@@ -10,8 +10,8 @@ end
 matlabpool open 4
 
 parfor index = 1:size(waterpixels,1)
-    WaterPxMatrix = ones(size(LUT,1),1)*waterpixels(index,1:5);
-    RMSE = sqrt(mean((LUT(:,1:5)-WaterPxMatrix).^2,2));
+    WaterPxMatrix = ones(size(LUT,1),1)*waterpixels(index,1:size(LUT,2));
+    RMSE = sqrt(mean((LUT(:,1:size(LUT,2))-WaterPxMatrix).^2,2));
     [~,I] = min(RMSE);
     XResults(index,:) = LUTconc(I,:);
     IMatrix(index) = I;

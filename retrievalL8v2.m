@@ -6,7 +6,7 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 %% L8 image cropped
 % 03/17/14 ELM with two dark from HL and better mask for bright pixel
 folderpath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/';
-filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
+filename = 'MOBELM/LC80160302013262LGN00_ONelm140317bigger500tif.tif';
 % filename = 'LC80160302013262LGN00_ONelm140629.tif'; % corrected with Rrs
 filepath = [folderpath filename];
 
@@ -23,7 +23,7 @@ imL8crop = imL8crop./pi; % in Rrs
 % imL8cropmask = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONmaskmin0p5resampled.tif');
 imL8cropmask = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
 
 imL8cropmask(imL8cropmask>0)=1;
 
@@ -43,7 +43,7 @@ waterpixels = double(waterpixels);
 % added 01-11-14. plot radiance curves
 % radiance image
 imL8radcrop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/LC80160302013262LGN00rad_ONelm.tif');
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00rad_ONelm.tif');
 
 imradnew = reshape(imL8radcrop,[size(imL8radcrop,1)*size(imL8radcrop,2) size(imL8radcrop,3)]);
 
@@ -645,6 +645,56 @@ SMmaplog10(SMmaplog10==-Inf)=-4;
 CDOMmaplog10 = log10(CDOMmap);
 CDOMmaplog10(CDOMmaplog10==-Inf)=-4;
 % CDOMmaplog10masked = bsxfun(@times, CDOMmaplog10, landmask);
+
+
+
+%% Read ROIs from ENVI text Stat file 
+
+pathname = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/InputOutput/130919/';
+% statfilename = 'ROIstats_140929_150408.txt';
+statfilename = 'ROIstats_130919_ONelm140317bigger500tif.txt';
+
+fid = fopen([pathname statfilename]);
+s = textscan(fid, '%s', 'Delimiter', '');
+idx1 = find(~cellfun('isempty',strfind(s{1},'Column')));
+
+data = s{1}(idx1(end)+1:size(s{1},1));
+
+fclose(fid);
+statdata = zeros(size(data,1),size(idx1,1));
+for index = 1:size(data,1)
+    statdata(index,:) = str2num(cell2mat(data(index)));
+end
+%%
+L8bands_ENVI = statdata(:,1);
+
+% for MoB-ELM with bright: CRANB and dark: ONTOS
+Cranb = statdata(:,2); Cranb(isnan(Cranb(:)))=0;
+LongN = statdata(:,3); LongN(isnan(LongN(:)))=0;
+LongS = statdata(:,4); LongS(isnan(LongS(:)))=0;
+OntNS = statdata(:,5); OntNS(isnan(OntNS(:)))=0;
+OntEx = statdata(:,6); OntEx(isnan(OntEx(:)))=0;
+OntOS = statdata(:,7); OntOS(isnan(OntOS(:)))=0;
+Bradd = statdata(:,6); Bradd(isnan(Bradd(:)))=0;
+
+
+figure('name',date)
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(L8bands_ENVI,Cranb,'r')
+hold on
+plot(L8bands_ENVI,LongN,'g')
+plot(L8bands_ENVI,LongS,'b')
+plot(L8bands_ENVI,OntNS,'c')
+plot(L8bands_ENVI,OntEx,'y')
+plot(L8bands_ENVI,OntOS,'m')
+plot(L8bands_ENVI,Bradd,'k')
+legend('Cranb','LongN','LongS','OntNS','OntEx','OntOS','Bradd')
+grid on
+% axis([.4 2.5 0 0.025])
+
+
 
 %% Find LONGS
 rule6 = strcmp(Inputused(:),'input140408LONGS')&...

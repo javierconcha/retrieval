@@ -5,8 +5,8 @@
 cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 %% L8 image cropped
 % 03/17/14 ELM with two dark from HL and better mask for bright pixel
-folderpath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/';
-filename = 'MOBELM/LC80160302013262LGN00_ONelm140317bigger500tif.tif';
+folderpath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/';
+filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
 % filename = 'LC80160302013262LGN00_ONelm140629.tif'; % corrected with Rrs
 filepath = [folderpath filename];
 
@@ -562,7 +562,6 @@ switch WhichLUT
         Inputused = Inputpond;
         DPFused = DPFpond;     
         fprintf('Using pond LUT\n');         
-        
 end
 
 %% Display LUTsmart
@@ -576,8 +575,6 @@ xlabel('wavelength [\mu m]','fontsize',fs)
 ylabel('R_{rs} [1/sr]','fontsize',fs)
 xlim([0.4 2.5])
 grid on
-
-
 
 %% Retrieval Best Match %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('--------------------------------------------------------------------------')
@@ -646,12 +643,10 @@ CDOMmaplog10 = log10(CDOMmap);
 CDOMmaplog10(CDOMmaplog10==-Inf)=-4;
 % CDOMmaplog10masked = bsxfun(@times, CDOMmaplog10, landmask);
 
-
-
 %% Read ROIs from ENVI text Stat file 
 
 pathname = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/InputOutput/130919/';
-% statfilename = 'ROIstats_140929_150408.txt';
+% statfilename = 'ROIstats_130919_ONelm140619.txt';
 statfilename = 'ROIstats_130919_ONelm140317bigger500tif.txt';
 
 fid = fopen([pathname statfilename]);
@@ -665,18 +660,26 @@ statdata = zeros(size(data,1),size(idx1,1));
 for index = 1:size(data,1)
     statdata(index,:) = str2num(cell2mat(data(index)));
 end
-%%
-L8bands_ENVI = statdata(:,1);
+% Extract data
+L8bands_ENVI = statdata(:,1)';
 
-% for MoB-ELM with bright: CRANB and dark: ONTOS
-Cranb = statdata(:,2); Cranb(isnan(Cranb(:)))=0;
-LongN = statdata(:,3); LongN(isnan(LongN(:)))=0;
-LongS = statdata(:,4); LongS(isnan(LongS(:)))=0;
-OntNS = statdata(:,5); OntNS(isnan(OntNS(:)))=0;
-OntEx = statdata(:,6); OntEx(isnan(OntEx(:)))=0;
-OntOS = statdata(:,7); OntOS(isnan(OntOS(:)))=0;
-Bradd = statdata(:,6); Bradd(isnan(Bradd(:)))=0;
+Cranb = statdata(:,2)'; Cranb(isnan(Cranb(:)))=0;
+LongN = statdata(:,3)'; LongN(isnan(LongN(:)))=0;
+LongS = statdata(:,4)'; LongS(isnan(LongS(:)))=0;
+OntNS = statdata(:,5)'; OntNS(isnan(OntNS(:)))=0;
+OntEx = statdata(:,6)'; OntEx(isnan(OntEx(:)))=0;
+OntOS = statdata(:,7)'; OntOS(isnan(OntOS(:)))=0;
+Bradd = statdata(:,6)'; Bradd(isnan(Bradd(:)))=0;
 
+% LongS = [0.009494 0.014197 0.032298 0.020612 0.009200 0.000870 0.000533];
+% Cranb = [0.010979 0.017012 0.044860 0.025397 0.007961 0.001144 0.000468];
+% OntOS = [ 0.007588 0.010373 0.008942 0.002004 0.000197 0.000113 0.000057];
+% OntNS = [0.012930 0.019153 0.021296 0.004983 0.000745 0.000520 0.000194];
+
+LongS = LongS./pi;
+Cranb = Cranb./pi;
+OntOS = OntOS./pi; 
+OntNS = OntNS./pi;
 
 figure('name',date)
 fs = 15;
@@ -694,16 +697,10 @@ legend('Cranb','LongN','LongS','OntNS','OntEx','OntOS','Bradd')
 grid on
 % axis([.4 2.5 0 0.025])
 
-
-
 %% Find LONGS
 rule6 = strcmp(Inputused(:),'input140408LONGS')&...
     LUTconcused(:,1)==110 & LUTconcused(:,2)==50 &...
     LUTconcused(:,3)==1.2;
-
-LongS = [0.009494 0.014197 0.032298 0.020612 ...
-    0.009200 0.000870 0.000533];
-LongS = LongS./pi;
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongS).^2,2)));
@@ -735,10 +732,6 @@ rule6 = strcmp(Inputused(:),'input140408LONGS')&...
     LUTconcused(:,1)==60 & LUTconcused(:,2)==25 &...
     LUTconcused(:,3)==1.00;
 
-Cranb = [0.010979 0.017012 0.044860 ...
-    0.025397 0.007961 0.001144 0.000468];
-Cranb = Cranb./pi;
-
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*Cranb).^2,2)));
 
@@ -766,12 +759,7 @@ grid on
 %% Find OntOS
 rule6 = strcmp(Inputused(:),'input140408ONTNS')&...
     LUTconcused(:,1)==1.0 & LUTconcused(:,2)==1.0 &...
-    LUTconcused(:,3)==0.21;
-
-
-OntOS = [ 0.007588 0.010373 0.008942 0.002004 ...
-			 0.000197 0.000113 0.000057]; 
-OntOS = OntOS./pi;        
+    LUTconcused(:,3)==0.21;      
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntOS).^2,2)));
@@ -801,10 +789,6 @@ grid on
 rule6 = strcmp(Inputused,'input140408ONTNS')&...
     LUTconcused(:,1)==0.5 & LUTconcused(:,2)==2.0 &...
     LUTconcused(:,3)==0.11;
-
-OntNS = [0.012930 0.019153 0.021296 0.004983 ...
-    0.000745 0.000520 0.000194];
-OntNS = OntNS./pi;
 
 % find LongS in waterpixels with index I
 [~,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntNS).^2,2)));
@@ -1084,10 +1068,7 @@ axis off
 h = colorbar;
 set(h,'fontsize',cbfs)
 
-
-
 %% Mapping Concentrations log scale
-
 
 figure
 fs = 15;
@@ -1115,7 +1096,6 @@ title('CDOM map log scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
 colorbar
-
 
 %% Save maps as TIFF
 

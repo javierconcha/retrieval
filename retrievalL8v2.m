@@ -1212,110 +1212,110 @@ colorbar
 axis equal
 axis off
 
-%%
-% % %% Test the optimization algorhythm
-% % LUTconc = LUTconc;
-% % CDOMconc = unique(LUTconc(:,3))
-% % SMconc   = unique(LUTconc(:,2))
-% % CHLconc  = unique(LUTconc(:,1))
-% % 
-% % disp('--------------------------------------------------------------------------')
-% % disp('Running Optimization Routine')
-% %     [XResultstest,residual] = opt(LUT(:,1:5),LUT(:,1:5),LUTconc);
-% % disp('Optimization Routine finished Successfully')
-% % 
-% % 
-% % 
-% % 
-% % % E_RMS
-% % disp('--------------------------------------------------')
-% % E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1));
-% % E_Chl = E_Chl*100/68;
-% % str = sprintf('E_Chl  = %2.2f %%',E_Chl);
-% % disp(str)
-% % 
-% % E_SM = sqrt(sum((XResultstest(:,2)-LUTconc(:,2)).^2)/size(XResultstest,1));
-% % E_SM = E_SM*100/24;
-% % str = sprintf('E_SM   = %2.2f %%',E_SM);
-% % disp(str)
-% % 
-% % E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconc(:,3)).^2)/size(XResultstest,1));
-% % E_CDOM = E_CDOM*100/14;
-% % str = sprintf('E_CDOM = %2.2f %%',E_CDOM);
-% % disp(str)
-% % 
-% % %% Residual Histogram
-% % figure
-% % set(gcf,'color','white')
-% % subplot(2,3,1)
-% % hist(residual(:,1))
-% % title('band 1')
-% % 
-% % subplot(2,3,2)
-% % hist(residual(:,2))
-% % title('band 2')
-% % 
-% % subplot(2,3,3)
-% % hist(residual(:,3))
-% % title('band 3')
-% % 
-% % subplot(2,3,4)
-% % hist(residual(:,4))
-% % title('band 4')
-% % 
-% % subplot(2,3,5)
-% % hist(residual(:,5))
-% % title('band 5')
-% % %% Display data vs retrieved
-% % 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(LUTconc(:,1),XResultstest(:,1),'.')
-% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
-% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
-% % hold on
-% % plot(xLimits,xLimits,'k')
-% % ylim(xLimits)
-% % xlim(xLimits)
-% % title('CHL Real vs retrieved','fontsize',fs)
-% % xlabel('real','fontsize',fs)
-% % ylabel('retrieved','fontsize',fs)
-% % set(gca,'fontsize',fs)
-% % axis equal
-% % 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(LUTconc(:,2),XResultstest(:,2),'.')
-% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
-% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
-% % hold on
-% % plot(xLimits,xLimits,'k')
-% % ylim(xLimits)
-% % xlim(xLimits)
-% % title('SM Real vs retrieved','fontsize',fs)
-% % xlabel('real','fontsize',fs)
-% % ylabel('retrieved','fontsize',fs)
-% % set(gca,'fontsize',fs)
-% % axis equal
-% % 
-% % figure
-% % fs = 15;
-% % set(gcf,'color','white')
-% % plot(LUTconc(:,3),XResultstest(:,3),'.')
-% % xLimits = get(gca,'XLim');  %# Get the range of the x axis
-% % yLimits = get(gca,'YLim');  %# Get the range of the y axis
-% % hold on
-% % plot(xLimits,xLimits,'k')
-% % ylim(xLimits)
-% % xlim(xLimits)
-% % title('CDOM Real vs retrieved','fontsize',fs)
-% % xlabel('real','fontsize',fs)
-% % ylabel('retrieved','fontsize',fs)
-% % set(gca,'fontsize',fs)
-% % axis equal
-% % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Test the optimization algorhythm
+LUTconc = LUTconc;
+CDOMconc = unique(LUTconc(:,3))
+SMconc   = unique(LUTconc(:,2))
+CHLconc  = unique(LUTconc(:,1))
+
+disp('--------------------------------------------------------------------------')
+disp('Running Optimization Routine')
+    [XResultstest,residual] = opt(LUTused(:,1:5),LUTused(:,1:5),LUTconcused);
+disp('Optimization Routine finished Successfully')
+
+
+
+
+% E_RMS
+disp('--------------------------------------------------')
+E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1));
+E_Chl = E_Chl*100/68;
+str = sprintf('E_Chl  = %2.2f %%',E_Chl);
+disp(str)
+
+E_SM = sqrt(sum((XResultstest(:,2)-LUTconc(:,2)).^2)/size(XResultstest,1));
+E_SM = E_SM*100/24;
+str = sprintf('E_SM   = %2.2f %%',E_SM);
+disp(str)
+
+E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconc(:,3)).^2)/size(XResultstest,1));
+E_CDOM = E_CDOM*100/14;
+str = sprintf('E_CDOM = %2.2f %%',E_CDOM);
+disp(str)
+
+%% Residual Histogram
+figure
+set(gcf,'color','white')
+subplot(2,3,1)
+hist(residual(:,1))
+title('band 1')
+
+subplot(2,3,2)
+hist(residual(:,2))
+title('band 2')
+
+subplot(2,3,3)
+hist(residual(:,3))
+title('band 3')
+
+subplot(2,3,4)
+hist(residual(:,4))
+title('band 4')
+
+subplot(2,3,5)
+hist(residual(:,5))
+title('band 5')
+%% Display data vs retrieved
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(LUTconc(:,1),XResultstest(:,1),'.')
+xLimits = get(gca,'XLim');  %# Get the range of the x axis
+yLimits = get(gca,'YLim');  %# Get the range of the y axis
+hold on
+plot(xLimits,xLimits,'k')
+ylim(xLimits)
+xlim(xLimits)
+title('CHL Real vs retrieved','fontsize',fs)
+xlabel('real','fontsize',fs)
+ylabel('retrieved','fontsize',fs)
+set(gca,'fontsize',fs)
+axis equal
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(LUTconc(:,2),XResultstest(:,2),'.')
+xLimits = get(gca,'XLim');  %# Get the range of the x axis
+yLimits = get(gca,'YLim');  %# Get the range of the y axis
+hold on
+plot(xLimits,xLimits,'k')
+ylim(xLimits)
+xlim(xLimits)
+title('SM Real vs retrieved','fontsize',fs)
+xlabel('real','fontsize',fs)
+ylabel('retrieved','fontsize',fs)
+set(gca,'fontsize',fs)
+axis equal
+
+figure
+fs = 15;
+set(gcf,'color','white')
+plot(LUTconc(:,3),XResultstest(:,3),'.')
+xLimits = get(gca,'XLim');  %# Get the range of the x axis
+yLimits = get(gca,'YLim');  %# Get the range of the y axis
+hold on
+plot(xLimits,xLimits,'k')
+ylim(xLimits)
+xlim(xLimits)
+title('CDOM Real vs retrieved','fontsize',fs)
+xlabel('real','fontsize',fs)
+ylabel('retrieved','fontsize',fs)
+set(gca,'fontsize',fs)
+axis equal
+
 % % %% Retrieval Opt, %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % disp('--------------------------------------------------------------------------')
 % % disp('Running Optimization Routine')

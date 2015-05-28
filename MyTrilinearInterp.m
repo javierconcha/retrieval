@@ -2,7 +2,7 @@ function f = MyTrilinearInterp(x0,LUT,Ytest,LUTconc)
 % Trilinear interpolation
 % By Javier A. Concha
 % 05-09-13
-% Trilinear interpolation for non uniform and monotonig grid
+% Trilinear interpolation for non uniform and monotoning grid
 %% Intialization
 % Initial Concentration
 

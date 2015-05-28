@@ -532,11 +532,11 @@ LUTconcpond = LUTconc(rule2,:);
 Inputpond = c{1}(rule2);
 DPFpond = c{5}(rule2);
 
-WhichLUT = 1;
+WhichLUT = 3;
 
 switch WhichLUT
     case 0
-        LUTused = LUT;
+        LUTused = LUT;s
         LUTconcused = LUTconc;
         Inputused = c{1};
         DPFused = c{5};
@@ -1213,33 +1213,67 @@ axis equal
 axis off
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Test the optimization algorhythm
-LUTconc = LUTconc;
+%% Test the optimization algorithm
+
+DPFusednu = zeros(size(DPFused,1),1); % DPF used number (not string name)
+
+for index = 1:size(DPFused,1)     
+    if strcmp(DPFused(index),'FFbb005.dpf')
+        DPFusednu(index)= 0.5;
+    elseif strcmp(DPFused(index),'FFbb006.dpf')
+        DPFusednu(index)= 0.6; 
+    elseif strcmp(DPFused(index),'FFbb007.dpf')
+        DPFusednu(index)= 0.7;
+    elseif strcmp(DPFused(index),'FFbb008.dpf')
+        DPFusednu(index)= 0.8;
+    elseif strcmp(DPFused(index),'FFbb009.dpf')
+        DPFusednu(index)= 0.9;
+    elseif strcmp(DPFused(index),'FFbb010.dpf')
+        DPFusednu(index)= 1.0; 
+    elseif strcmp(DPFused(index),'FFbb012.dpf')
+        DPFusednu(index)= 1.2;
+    elseif strcmp(DPFused(index),'FFbb014.dpf')
+        DPFusednu(index)= 1.4;
+    elseif strcmp(DPFused(index),'FFbb016.dpf')
+        DPFusednu(index)= 1.6;
+    elseif strcmp(DPFused(index),'FFbb018.dpf')
+        DPFusednu(index)= 1.8;  
+    elseif strcmp(DPFused(index),'FFbb020.dpf')
+        DPFusednu(index)= 2.0;     
+    elseif strcmp(DPFused(index),'FFbb022.dpf')
+        DPFusednu(index)= 2.2;      
+    elseif strcmp(DPFused(index),'FFbb024.dpf')
+        DPFusednu(index)= 2.4;        
+    end
+end
+
+
+LUTconctri  = LUTconcused(DPFusednu == .7,:);
+LUTtri      = LUTused(DPFusednu == .7,1:5);
+
+format short
 CDOMconc = unique(LUTconc(:,3))
 SMconc   = unique(LUTconc(:,2))
 CHLconc  = unique(LUTconc(:,1))
-
+%%
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResultstest,residual] = opt(LUTused(:,1:5),LUTused(:,1:5),LUTconcused);
+    [XResultstest,residual] = opt(LUTtri,LUTtri,LUTconctri);
 disp('Optimization Routine finished Successfully')
 
-
-
-
-% E_RMS
+%% E_RMS
 disp('--------------------------------------------------')
-E_Chl = sqrt(sum((XResultstest(:,1)-LUTconc(:,1)).^2)/size(XResultstest,1));
+E_Chl = sqrt(sum((XResultstest(:,1)-LUTconctri(:,1)).^2)/size(XResultstest,1));
 E_Chl = E_Chl*100/68;
 str = sprintf('E_Chl  = %2.2f %%',E_Chl);
 disp(str)
 
-E_SM = sqrt(sum((XResultstest(:,2)-LUTconc(:,2)).^2)/size(XResultstest,1));
+E_SM = sqrt(sum((XResultstest(:,2)-LUTconctri(:,2)).^2)/size(XResultstest,1));
 E_SM = E_SM*100/24;
 str = sprintf('E_SM   = %2.2f %%',E_SM);
 disp(str)
 
-E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconc(:,3)).^2)/size(XResultstest,1));
+E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconctri(:,3)).^2)/size(XResultstest,1));
 E_CDOM = E_CDOM*100/14;
 str = sprintf('E_CDOM = %2.2f %%',E_CDOM);
 disp(str)
@@ -1271,7 +1305,7 @@ title('band 5')
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(LUTconc(:,1),XResultstest(:,1),'.')
+plot(LUTconctri(:,1),XResultstest(:,1),'.')
 xLimits = get(gca,'XLim');  %# Get the range of the x axis
 yLimits = get(gca,'YLim');  %# Get the range of the y axis
 hold on
@@ -1287,7 +1321,7 @@ axis equal
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(LUTconc(:,2),XResultstest(:,2),'.')
+plot(LUTconctri(:,2),XResultstest(:,2),'.')
 xLimits = get(gca,'XLim');  %# Get the range of the x axis
 yLimits = get(gca,'YLim');  %# Get the range of the y axis
 hold on
@@ -1303,7 +1337,7 @@ axis equal
 figure
 fs = 15;
 set(gcf,'color','white')
-plot(LUTconc(:,3),XResultstest(:,3),'.')
+plot(LUTconctri(:,3),XResultstest(:,3),'.')
 xLimits = get(gca,'XLim');  %# Get the range of the x axis
 yLimits = get(gca,'YLim');  %# Get the range of the y axis
 hold on

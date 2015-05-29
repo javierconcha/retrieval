@@ -532,11 +532,11 @@ LUTconcpond = LUTconc(rule2,:);
 Inputpond = c{1}(rule2);
 DPFpond = c{5}(rule2);
 
-WhichLUT = 3;
+WhichLUT = 1;
 
 switch WhichLUT
     case 0
-        LUTused = LUT;s
+        LUTused = LUT;
         LUTconcused = LUTconc;
         Inputused = c{1};
         DPFused = c{5};
@@ -1247,35 +1247,37 @@ for index = 1:size(DPFused,1)
     end
 end
 
+dpftest = 2.0;
+LUTconctri  = LUTconcused(DPFusednu == dpftest,:);
+LUTtri      = LUTused(DPFusednu == dpftest,1:5);
+InputLabeltri = Inputused(DPFusednu == dpftest);
 
-LUTconctri  = LUTconcused(DPFusednu == .7,:);
-LUTtri      = LUTused(DPFusednu == .7,1:5);
 
 format short
-CDOMconc = unique(LUTconc(:,3))
-SMconc   = unique(LUTconc(:,2))
-CHLconc  = unique(LUTconc(:,1))
+CDconc = unique(LUTconc(:,3))
+SMconc = unique(LUTconc(:,2))
+CHconc = unique(LUTconc(:,1))
 %%
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResultstest,residual] = opt(LUTtri,LUTtri,LUTconctri);
+    [XResultstest,residual] = opt(LUTtri,LUTtri,LUTconctri,InputLabeltri);
 disp('Optimization Routine finished Successfully')
 
 %% E_RMS
 disp('--------------------------------------------------')
-E_Chl = sqrt(sum((XResultstest(:,1)-LUTconctri(:,1)).^2)/size(XResultstest,1));
-E_Chl = E_Chl*100/68;
-str = sprintf('E_Chl  = %2.2f %%',E_Chl);
+E_CH = sqrt(sum((XResultstest(:,1)-LUTconctri(:,1)).^2)/size(XResultstest,1));
+E_CH = E_CH*100/max(CHconc);
+str = sprintf('E_CH = %2.2f %%',E_CH);
 disp(str)
 
 E_SM = sqrt(sum((XResultstest(:,2)-LUTconctri(:,2)).^2)/size(XResultstest,1));
-E_SM = E_SM*100/24;
-str = sprintf('E_SM   = %2.2f %%',E_SM);
+E_SM = E_SM*100/max(SMconc);
+str = sprintf('E_SM = %2.2f %%',E_SM);
 disp(str)
 
-E_CDOM = sqrt(sum((XResultstest(:,3)-LUTconctri(:,3)).^2)/size(XResultstest,1));
-E_CDOM = E_CDOM*100/14;
-str = sprintf('E_CDOM = %2.2f %%',E_CDOM);
+E_CD = sqrt(sum((XResultstest(:,3)-LUTconctri(:,3)).^2)/size(XResultstest,1));
+E_CD = E_CD*100/max(CDconc);
+str = sprintf('E_CD = %2.2f %%',E_CD);
 disp(str)
 
 %% Residual Histogram
@@ -1349,6 +1351,48 @@ xlabel('real','fontsize',fs)
 ylabel('retrieved','fontsize',fs)
 set(gca,'fontsize',fs)
 axis equal
+%% 
+% CHL
+figure
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(LUTconctri(:,1))
+hold on
+plot(XResultstest(:,1),'--r')
+title('CHL')
+legend('real','retrieved')
+xlabel('ith element')
+ylabel('C_a')
+grid on
+
+% SM
+figure
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(LUTconctri(:,2))
+hold on
+plot(XResultstest(:,2),'--r')
+title('SM')
+legend('real','retrieved')
+xlabel('ith element')
+ylabel('TSS')
+grid on
+
+% CDOM
+figure
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(LUTconctri(:,3))
+hold on
+plot(XResultstest(:,3),'--r')
+title('CDOM')
+legend('real','retrieved')
+xlabel('ith element')
+ylabel('a_{CDOM}(440)')
+grid on
 
 % % %% Retrieval Opt, %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % disp('--------------------------------------------------------------------------')

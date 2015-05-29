@@ -1,5 +1,5 @@
 % Optimization Routine
-function [XResults,residual] = opt(Ytest,LUT,LUTconc,InputLabel)
+function [XResults,residual] = opt(Ytest,LUT,LUTconc,InputLabel,DPFused)
 format short;
 
 % Xtest: water pixels concentration from the image; Dim: 2000x3
@@ -48,12 +48,18 @@ for i = 1:size(Ytest,1)
     a=sum((Y-repmat(Ytest(i,:),size(Y,1),1)).^2,2);
     [~,index]=min(a);
     x0=LUTconc(index,:);
+
     % Select from the LUT with same input. From ponds OR lake inputs
-    CDconc  = unique(LUTconc(strcmp(InputLabel,InputLabel(index)),3))';
-    SMconc  = unique(LUTconc(strcmp(InputLabel,InputLabel(index)),2))';
-    CHconc  = unique(LUTconc(strcmp(InputLabel,InputLabel(index)),1))';
+    cond1 = strcmp(InputLabel,InputLabel(index));
+    cond2 = DPFused == DPFused(index);
+    cond3 =  cond1&cond2;
     
-    LUTconcUsed = LUTconc(strcmp(InputLabel,InputLabel(index)),:);
+    CDconc  = unique(LUTconc(cond3,3))';
+    SMconc  = unique(LUTconc(cond3,2))';
+    CHconc  = unique(LUTconc(cond3,1))';
+    
+    LUTconcUsed = LUTconc(cond3,:);
+    YUsed = Y(cond3,:);
     
     % for the extremes (myfun_mod.m error otherwise)
     if x0(1)==max(CHconc) , x0(1)=CHconc(end-1); end
@@ -67,7 +73,7 @@ for i = 1:size(Ytest,1)
         lsqnonlin(@MyTrilinearInterp,x0,...
             [min(CHconc);min(SMconc);min(CDconc)],...
             [max(CHconc);max(SMconc);max(CDconc)],...
-            options,Y,Ytest(i,:),LUTconcUsed);
+            options,YUsed,Ytest(i,:),LUTconcUsed);
     
 end
 disp('Elapsed time is (min):')

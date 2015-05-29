@@ -419,6 +419,8 @@ c = {[c1{1};c2{1}] [c1{2};c2{2}] [c1{3};c2{3}] [c1{4};c2{4}] [c1{5};c2{5}]};
 
 LUTconc = [c{2}(:) c{3}(:) c{4}(:)];
 
+
+
 % LUT from HL with 120 wavelength
 
 wavelength = [...
@@ -460,7 +462,18 @@ Rrs = [Rrs1 Rrs2];
 
 LUT = spect_sampL8(Rrs,wavelength);
 
+LUTconcInput = zeros(size(LUT,1),1);
+LUTconcDPF = zeros(size(LUT,1),1);
+
+
 for index = 1:size(LUT,1) 
+    
+    if strcmp(c{1}(index),'input140408ONTNS')
+        LUTconcInput(index)= 1;
+    elseif strcmp(c{1}(index),'input140408LONGS')
+        LUTconcInput(index)= 2;     
+    end
+    
     if strcmp(c{5}(index),'FFbb003.dpf')
         LUTconcDPF(index)= 0.3;   
     elseif strcmp(c{5}(index),'FFbb004.dpf')
@@ -495,6 +508,20 @@ for index = 1:size(LUT,1)
         LUTconcDPF(index)= 2.6;
     end
 end
+
+% Cleaning LUT from repeated values
+LUT_All = unique([LUT LUTconcInput LUTconc LUTconcDPF],'rows','stable');
+if size(LUT_All,1)~=size(LUT,1)
+    disp('Repeated Values in LUT. They were deleted!')
+end    
+
+LUT = LUT_All(:,1:7);
+LUTconc = LUT_All(:,9:11);
+LUTconcInput = LUT_All(:,8);
+LUTconcDPF = LUT_All(:,12);
+
+
+%
 
 % rule5 = strcmp(c{1}(:),'input140408ONTNS')& LUTconc(:,1)<10&LUTconc(:,2)<10&LUTconc(:,3)<0.9 &...
 %     (strcmp(c{5}(:),'FFbb010.dpf')|strcmp(c{5}(:),'FFbb012.dpf'));
@@ -1248,9 +1275,9 @@ for index = 1:size(DPFused,1)
 end
 
 dpftest = 2.0;
-LUTconctri  = LUTconcused(DPFusednu == dpftest,:);
-LUTtri      = LUTused(DPFusednu == dpftest,1:5);
-InputLabeltri = Inputused(DPFusednu == dpftest);
+LUTconctri  = LUTconcused;
+LUTtri      = LUTused(:,1:5);
+InputLabeltri = Inputused;
 
 
 format short
@@ -1260,7 +1287,7 @@ CHconc = unique(LUTconc(:,1))
 %%
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResultstest,residual] = opt(LUTtri,LUTtri,LUTconctri,InputLabeltri);
+    [XResultstest,residual] = opt(LUTtri,LUTtri,LUTconctri,InputLabeltri,DPFusednu);
 disp('Optimization Routine finished Successfully')
 
 %% E_RMS

@@ -1,5 +1,5 @@
 % Optimization Routine
-function [XResults,residual] = opt(Ytest,LUT,LUTconc,InputLabel,DPFused)
+function [XResults,residual] = opt(Ytest,LUT,LUTconc,LUTconcInput,LUTconcDPF)
 format short;
 
 % Xtest: water pixels concentration from the image; Dim: 2000x3
@@ -50,8 +50,8 @@ for i = 1:size(Ytest,1)
     x0=LUTconc(index,:);
 
     % Select from the LUT with same input. From ponds OR lake inputs
-    cond1 = strcmp(InputLabel,InputLabel(index));
-    cond2 = DPFused == DPFused(index);
+    cond1 = LUTconcInput == LUTconcInput(index);
+    cond2 = LUTconcDPF == LUTconcDPF(index);
     cond3 =  cond1&cond2;
     
     CDconc  = unique(LUTconc(cond3,3))';

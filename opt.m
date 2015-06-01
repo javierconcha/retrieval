@@ -15,13 +15,15 @@ Y = LUT;
 % [f2,f1,f3] = ndgrid(CDOMconc,SMconc,CHLconc); % CDOM SM CHL
 options = optimset('Display','off','Tolfun',1e-10);
 
-% matlabpool open 4 % for using paralel computing
+tic
+
+matlabpool open 4 % for using paralel computing
 
 XResults = zeros(size(Ytest,1),3);
 residual = zeros(size(Ytest));
 %%
-tic
-for i = 1:size(Ytest,1)
+
+parfor i = 1:size(Ytest,1)
 %     if visual==1
 % figure(30)
 % clf
@@ -76,10 +78,12 @@ for i = 1:size(Ytest,1)
             options,YUsed,Ytest(i,:),LUTconcUsed);
     
 end
+
+
+matlabpool close % for using paralel computing
+
 disp('Elapsed time is (min):')
 disp(toc/60)
-
-% matlabpool close % for using paralel computing
 beep
 pause(0.1)
 beep

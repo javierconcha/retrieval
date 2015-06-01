@@ -637,10 +637,10 @@ CHconc = unique(LUTconc(:,1))
 %
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResults,residual] = opt(waterpixels(:,1:5),LUTused(:,1:5),LUTconcused,Inputused,DPFused);
+    [XResults,residual,InputType,DPFType] = opt(waterpixels(:,1:5),LUTused(:,1:5),LUTconcused,Inputused,DPFused);
 disp('Optimization Routine finished Successfully')
 
-save LSQNONLIN_results.mat XResults residual
+save LSQNONLIN_results.mat XResults residual InputType DPFType
 
 %%
 % Maps

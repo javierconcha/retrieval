@@ -14,7 +14,7 @@ parfor index = 1:size(waterpixels,1)
     RMSE = sqrt(mean((LUT(:,1:size(LUT,2))-WaterPxMatrix).^2,2));
     [~,I] = min(RMSE);
     XResults(index,:) = LUTconc(I,:);
-    IMatrix(index) = I;
+    IMatrix(index) = I; % index in the LUT
     
 end
 

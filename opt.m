@@ -1,5 +1,5 @@
 % Optimization Routine
-function [XResults,residual,InputType,DPFType] = opt(Ytest,LUT,LUTconc,LUTconcInput,LUTconcDPF)
+function [XResults,residual,IMatrix] = opt(Ytest,LUT,LUTconc,LUTconcInput,LUTconcDPF)
 format short;
 
 % Xtest: water pixels concentration from the image; Dim: 2000x3
@@ -19,8 +19,9 @@ tic
 
 matlabpool open 4 % for using paralel computing
 
-XResults = zeros(size(Ytest,1),3);
-residual = zeros(size(Ytest));
+XResults    = zeros(size(Ytest,1),3);
+residual    = zeros(size(Ytest));
+IMatrix     = zeros(size(Ytest,1),1);
 %%
 
 parfor i = 1:size(Ytest,1)
@@ -56,8 +57,7 @@ parfor i = 1:size(Ytest,1)
     cond2 = LUTconcDPF == LUTconcDPF(index);
     cond3 =  cond1&cond2;
     
-    InputType(i) = LUTconcInput(index);
-    DPFType(i) = LUTconcDPF(index);
+    IMatrix(i) = index; % index in the LUT
     
     CDconc  = unique(LUTconc(cond3,3))';
     SMconc  = unique(LUTconc(cond3,2))';

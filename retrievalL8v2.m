@@ -366,7 +366,7 @@ grid on
 
 
 %% LUTs from HydroLight
-clear c c1 Rrs LUT LUTconc LUTconcDPF LUTused InputType % if other retrieval's variables are in Workspace
+clear c c1 Rrs LUT LUTconc LUTconcDPF LUTused InputRet % if other retrieval's variables are in Workspace
 % new 04/09/14
 % LUTfilename = 'LUTL8140409.txt'; 
 % LUTconcfilename = 'concentration_list140409.txt';
@@ -519,17 +519,19 @@ CHlimit = 50;
 CHlimitup = 120;
 SMlimit = 25;
 CDlimit = 0.7;
-DPFlimitup = 1.9;
-DPFlimitlo = 0.9;
+% DPFlimitup = 1.9;
+% DPFlimitlo = 0.9;
 
 % input140408ONTNS
 rule5 = LUTconcInput==1 & ...
-    LUTconc(:,1)<CHlimit & LUTconc(:,2)<SMlimit & LUTconc(:,3)<CDlimit;%& ...
-%     LUTconcDPF(:)<DPFlimitup &LUTconcDPF(:)>DPFlimitlo;
+    LUTconc(:,1)<CHlimit & LUTconc(:,2)<SMlimit & LUTconc(:,3)<CDlimit & ...
+    LUTconcDPF(:)<0.7 & LUTconcDPF(:)>0.5;
+
 % input140408LONGS
 rule2 = LUTconcInput==2 & ...
-    LUTconc(:,1)>=CHlimit & LUTconc(:,1)<CHlimitup & LUTconc(:,2)>=SMlimit & LUTconc(:,3)>=CDlimit;%& ...
-%     LUTconcDPF(:)<DPFlimitup &LUTconcDPF(:)>DPFlimitlo;
+    LUTconc(:,1)>=CHlimit & LUTconc(:,1)<CHlimitup & LUTconc(:,2)>=SMlimit & ...
+    LUTconc(:,3)>=CDlimit & ...
+    LUTconcDPF(:)<1.6 &LUTconcDPF(:)>1.2;
 %
 LUTsmart = LUT(rule5|rule2,:);
 LUTconcsmart = LUTconc(rule5|rule2,:);
@@ -552,29 +554,29 @@ switch WhichLUT
     case 0
         LUTused = LUT;
         LUTconcused = LUTconc;
-        Inputused = LUTconcInput;
-        DPFused = LUTconcDPF;
+        LUTInputused = LUTconcInput;
+        LUTDPFused = LUTconcDPF;
         fprintf('Using full LUT\n');
         
     case 1
         LUTused = LUTsmart;
         LUTconcused = LUTconcsmart;
-        Inputused = Inputsmart;
-        DPFused = DPFsmart;     
+        LUTInputused = Inputsmart;
+        LUTDPFused = DPFsmart;     
         fprintf('Using smart LUT\n');
         
     case 2
         LUTused = LUTlake;
         LUTconcused = LUTconclake;
-        Inputused = Inputlake;
-        DPFused = DPFlake;     
+        LUTInputused = Inputlake;
+        LUTDPFused = DPFlake;     
         fprintf('Using lake LUT\n');     
         
     case 3
         LUTused = LUTpond;
         LUTconcused = LUTconcpond;
-        Inputused = Inputpond;
-        DPFused = DPFpond;     
+        LUTInputused = Inputpond;
+        LUTDPFused = DPFpond;     
         fprintf('Using pond LUT\n');         
 end
 
@@ -593,73 +595,47 @@ grid on
 %% Retrieval Best Match %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('--------------------------------------------------------------------------')
 disp('Running Best Match Routine')
-    [XResults,IMatrix] = BestMatchRetrieval(waterpixels(:,1:5),LUTused(:,1:5),LUTconcused);
+    [XResultsLS,IMatrixLS] = BestMatchRetrieval(waterpixels(:,1:5),LUTused(:,1:5),LUTconcused);
 disp('Routine finished Successfully')
 
-% to see what kind of input (ONTNS or LONGS) and DPFs were retrieved
+XResults = XResultsLS;
+IMatrix = IMatrixLS;
 
-InputType = zeros(size(IMatrix,1),1);
-DPFType = zeros(size(IMatrix,1),1);
-
-for index = 1:size(IMatrix,1) 
-    if strcmp(Inputused(IMatrix(index)),'input140408ONTNS')
-        InputType(index)= 1;
-    elseif strcmp(Inputused(IMatrix(index)),'input140408LONGS')
-        InputType(index)= 2;     
-    end
-        
-    if strcmp(DPFused(IMatrix(index)),'FFbb005.dpf') % DPFused from LUT
-        DPFType(index)= 0.5;
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb006.dpf')
-        DPFType(index)= 0.6; 
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb007.dpf')
-        DPFType(index)= 0.7;
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb008.dpf')
-        DPFType(index)= 0.8;
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb009.dpf')
-        DPFType(index)= 0.9;
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb010.dpf')
-        DPFType(index)= 1.0; 
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb012.dpf')
-        DPFType(index)= 1.2;
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb014.dpf')
-        DPFType(index)= 1.4;
-    elseif strcmp(DPFused(IMatrix(index)),'FFbb016.dpf')
-        DPFType(index)= 1.6;
-    end
-end
 %% Retrieval using optimization
 
 format short
-CDconc = unique(LUTconc(:,3))
-SMconc = unique(LUTconc(:,2))
-CHconc = unique(LUTconc(:,1))
+CDconc = unique(LUTconcused(:,3))
+SMconc = unique(LUTconcused(:,2))
+CHconc = unique(LUTconcused(:,1))
 %
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResults,residual,InputType,DPFType] = opt(waterpixels(:,1:5),LUTused(:,1:5),LUTconcused,Inputused,DPFused);
+    [XResultsOpt,residualOpt,IMatrixOpt] = opt(waterpixels(:,1:5),LUTused(:,1:5),LUTconcused,LUTInputused,LUTDPFused);
 disp('Optimization Routine finished Successfully')
 
-save LSQNONLIN_results.mat XResults residual InputType DPFType
+save LSQNONLIN_results.mat XResultsOpt residualOpt IMatrixOpt
+%% Maps
 
-%%
-% Maps
+% to see what kind of input (ONTNS or LONGS) and DPFs were retrieved
+InputRet = LUTInputused(IMatrix);
+DPFRet = LUTDPFused(IMatrix);
+
 ConcRet = zeros(size(masknew,1),5);
-ConcRet(masknew==1,:) = [XResults InputType DPFType]; % Concentration Retrieved
-%%
+ConcRet(masknew==1,:) = [XResults InputRet DPFRet]; % Concentration Retrieved
+
 CHLmap  = reshape(ConcRet(:,1),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
 SMmap   = reshape(ConcRet(:,2),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
 CDOMmap = reshape(ConcRet(:,3),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
-%%
+
 INPUTmap = reshape(ConcRet(:,4),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
 
 DPFmap = reshape(ConcRet(:,5),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
-%%
+
 CHLmaplog10 = log10(CHLmap);
 CHLmaplog10(CHLmaplog10==-Inf)=-4;
 % CHLmaplog10masked = bsxfun(@times, CHLmaplog10, landmask);
@@ -727,15 +703,15 @@ grid on
 % axis([.4 2.5 0 0.025])
 
 %% Find LONGS
-rule6 = strcmp(Inputused(:),'input140408LONGS')&...
+rule6 = LUTInputused==2 &...
     LUTconcused(:,1)==110 & LUTconcused(:,2)==50 &...
     LUTconcused(:,3)==1.2;
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongS).^2,2)));
 
-Inputused(IMatrix(I))
-DPFused(IMatrix(I))
+LUTInputused(IMatrix(I))
+LUTDPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
 LongSconc130919 = [112.76 46 1.1953]
@@ -757,15 +733,15 @@ legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
 
 %% Find Cranb
-rule6 = strcmp(Inputused(:),'input140408LONGS')&...
+rule6 = LUTInputused==2 &...
     LUTconcused(:,1)==60 & LUTconcused(:,2)==25 &...
     LUTconcused(:,3)==1.00;
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*Cranb).^2,2)));
 
-Inputused(IMatrix(I))
-DPFused(IMatrix(I))
+LUTInputused(IMatrix(I))
+LUTDPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
 Cranbconc130919 = [64.08 26.7 1.0433]
@@ -786,15 +762,15 @@ set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
 %% Find OntOS
-rule6 = strcmp(Inputused(:),'input140408ONTNS')&...
+rule6 = LUTInputused==1 &...
     LUTconcused(:,1)==1.0 & LUTconcused(:,2)==1.0 &...
     LUTconcused(:,3)==0.21;      
 
 % find LongS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntOS).^2,2)));
 
-Inputused(IMatrix(I))
-DPFused(IMatrix(I))
+LUTInputused(IMatrix(I))
+LUTDPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
 OntOSconc130919 = [0.96 1.0 0.2188]
@@ -815,15 +791,15 @@ set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
 %% Find OntNS
-rule6 = strcmp(Inputused,'input140408ONTNS')&...
+rule6 = LUTInputused==1 &...
     LUTconcused(:,1)==0.5 & LUTconcused(:,2)==2.0 &...
     LUTconcused(:,3)==0.11;
 
 % find LongS in waterpixels with index I
 [~,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntNS).^2,2)));
 
-Inputused(IMatrix(I))
-DPFused(IMatrix(I))
+LUTInputused(IMatrix(I))
+LUTDPFused(IMatrix(I))
 LUTconcused(IMatrix(I),:)
 
 OntNSconc130919 = [0.48 1.6 0.1152];
@@ -914,7 +890,7 @@ cbfs = 15; % colorbar font size
 
 figure('name',date,'Position',get(0,'ScreenSize'))
 set(gcf,'color','white')
-subplot(2,2,1)
+subplot(3,2,1)
 imagesc(impos)
 title('RGB image ','fontsize',fs)
 set(gca,'fontsize',fs)
@@ -922,7 +898,7 @@ axis equal
 axis image
 axis off
 
-subplot(2,2,2)
+subplot(3,2,2)
 imagesc(CHLmap)
 % caxis([min(XResults(:,1)) max(XResults(:,1))])
 title('<CHL>, [\mug/L] ','fontsize',fs)
@@ -933,7 +909,7 @@ axis equal
 axis image
 axis off
 
-subplot(2,2,3)
+subplot(3,2,3)
 imagesc(SMmap)
 % caxis([min(XResults(:,2)) max(XResults(:,2))])
 title('<TSS>, [mg/L]','fontsize',fs)
@@ -944,7 +920,7 @@ axis equal
 axis image
 axis off
 
-subplot(2,2,4)
+subplot(3,2,4)
 imagesc(CDOMmap)
 % caxis([min(XResults(:,3)) max(XResults(:,3))])
 title('a_{CDOM}(440nm), [1/m] ','fontsize',fs)
@@ -954,6 +930,29 @@ set(h,'fontsize',cbfs)
 axis equal
 axis image
 axis off
+
+
+subplot(3,2,5)
+set(gcf,'color','white')
+imagesc(INPUTmap)
+title('INPUT map linear scale','fontsize',fs)
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',cbfs)
+
+subplot(3,2,6)
+set(gcf,'color','white')
+imagesc(DPFmap)
+title('DPF map linear scale','fontsize',fs)
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',cbfs)
 %% Mapping Concentrations linear scale
 fs = 30; % font size
 cbfs = 15; % colorbar font size
@@ -1251,7 +1250,7 @@ CHconc = unique(LUTconc(:,1))
 %
 disp('--------------------------------------------------------------------------')
 disp('Running Optimization Routine')
-    [XResultstest,residual] = opt(LUTused(:,1:5),LUTused(:,1:5),LUTconcused,Inputused,DPFused);
+    [XResultstest,residual] = opt(LUTused(:,1:5),LUTused(:,1:5),LUTconcused,LUTInputused,LUTDPFused);
 disp('Optimization Routine finished Successfully')
 
 %% E_RMS
@@ -1349,7 +1348,7 @@ title('CDOM Real vs retrieved','fontsize',fs)
 xlabel('real','fontsize',fs)
 ylabel('retrieved','fontsize',fs)
 set(gca,'fontsize',fs)
-%% 
+%% Display data vs retrieved
 % CHL
 figure
 fs = 15;

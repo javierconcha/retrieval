@@ -524,14 +524,14 @@ CDlimit = 0.7;
 
 % input140408ONTNS
 rule5 = LUTconcInput==1 & ...
-    LUTconc(:,1)<CHlimit & LUTconc(:,2)<SMlimit & LUTconc(:,3)<CDlimit & ...
-    LUTconcDPF(:)<0.7 & LUTconcDPF(:)>0.5;
+    LUTconc(:,1)<CHlimit & LUTconc(:,2)<SMlimit & LUTconc(:,3)<CDlimit;% & ...
+%     LUTconcDPF(:)<0.7 & LUTconcDPF(:)>0.5;
 
 % input140408LONGS
 rule2 = LUTconcInput==2 & ...
     LUTconc(:,1)>=CHlimit & LUTconc(:,1)<CHlimitup & LUTconc(:,2)>=SMlimit & ...
-    LUTconc(:,3)>=CDlimit & ...
-    LUTconcDPF(:)<1.6 &LUTconcDPF(:)>1.2;
+    LUTconc(:,3)>=CDlimit;% & ...
+%     LUTconcDPF(:)<0.9 &LUTconcDPF(:)>0.6;
 %
 LUTsmart = LUT(rule5|rule2,:);
 LUTconcsmart = LUTconc(rule5|rule2,:);
@@ -614,6 +614,10 @@ disp('Running Optimization Routine')
 disp('Optimization Routine finished Successfully')
 
 save LSQNONLIN_results.mat XResultsOpt residualOpt IMatrixOpt
+load 
+
+XResults = XResultsOpt;
+IMatrix = IMatrixOpt;
 %% Maps
 
 % to see what kind of input (ONTNS or LONGS) and DPFs were retrieved
@@ -1390,5 +1394,45 @@ legend('real','retrieved')
 xlabel('ith element')
 ylabel('a_{CDOM}(440)')
 grid on
-
-
+%%
+figure
+bn = 1;
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(XResultsOpt(:,bn),XResultsLS(:,bn),'.')
+axis equal
+xlabel('C_a NonLin')
+ylabel('C_a Least Squared')
+Concmax = max([XResultsOpt(:,bn);XResultsLS(:,bn)]);
+hold on 
+plot([0 Concmax*1.1],[0 Concmax*1.1],'k')
+axis([0 Concmax*1.1 0 Concmax*1.1])
+%%
+figure
+bn = 2;
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(XResultsOpt(:,bn),XResultsLS(:,bn),'.')
+axis equal
+xlabel('TSS NonLin')
+ylabel('TSS Least Squared')
+Concmax = max([XResultsOpt(:,bn);XResultsLS(:,bn)]);
+hold on 
+plot([0 Concmax*1.1],[0 Concmax*1.1],'k')
+axis([0 Concmax*1.1 0 Concmax*1.1])
+%%
+figure
+bn = 3;
+fs = 15;
+set(gcf,'color','white')
+set(gca,'fontsize',fs)
+plot(XResultsOpt(:,bn),XResultsLS(:,bn),'.')
+axis equal
+xlabel('CDOM NonLin')
+ylabel('CDOM Least Squared')
+Concmax = max([XResultsOpt(:,bn);XResultsLS(:,bn)]);
+hold on 
+plot([0 Concmax*1.1],[0 Concmax*1.1],'k')
+axis([0 Concmax*1.1 0 Concmax*1.1])

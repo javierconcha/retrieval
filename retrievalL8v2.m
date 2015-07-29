@@ -15,7 +15,8 @@ date = '130919';
 clear imL8crop imL8cropRGB maskRGB; % if other retrieval's variables are in Workspace
 
 [imL8crop, cmap] = imread(filepath);
-INFO = imfinfo(filepath);
+% INFO = imfinfo(filepath);
+% proj = geotiffinfo(filepath);
 
 imL8crop = imL8crop./pi; % in Rrs
 
@@ -24,6 +25,9 @@ imL8crop = imL8crop./pi; % in Rrs
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONmaskmin0p5resampled.tif');
 imL8cropmask = imread(...
     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
+
+% imL8cropmask = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/ENVI/LC80160302013262LGN00_LandAndBottomMaSK.tif');
 
 imL8cropmask(imL8cropmask>0)=1;
 
@@ -614,7 +618,7 @@ disp('Running Optimization Routine')
 disp('Optimization Routine finished Successfully')
 
 save LSQNONLIN_results.mat XResultsOpt residualOpt IMatrixOpt
-load 
+load LSQNONLIN_results.mat
 
 XResults = XResultsOpt;
 IMatrix = IMatrixOpt;
@@ -624,7 +628,7 @@ IMatrix = IMatrixOpt;
 InputRet = LUTInputused(IMatrix);
 DPFRet = LUTDPFused(IMatrix);
 
-ConcRet = zeros(size(masknew,1),5);
+ConcRet = nan(size(masknew,1),5);
 ConcRet(masknew==1,:) = [XResults InputRet DPFRet]; % Concentration Retrieved
 
 CHLmap  = reshape(ConcRet(:,1),...
@@ -1129,36 +1133,56 @@ set(gca,'fontsize',fs)
 axis('equal')
 colorbar
 
-%% Save maps as TIFF
+%% Save maps as GeoTIFF
+filepath = [folderpath filename];
+[~, R] = geotiffread(filepath);
+info = geotiffinfo(filepath);
 
-t1 = Tiff('LC80160302013262LGN00CHLmap.tif','w');
-t2 = Tiff('LC80160302013262LGN00SMmap.tif','w');
-t3 = Tiff('LC80160302013262LGN00CDOMmap.tif','w');
+geotiffwrite([folderpath 'LC80160302013262LGN00CHmap.tif'], CHLmap, R,  ...
+       'GeoKeyDirectoryTag', info.GeoTIFFTags.GeoKeyDirectoryTag);
 
-tagstruct.ImageLength = size(imL8crop,1);
-tagstruct.ImageWidth = size(imL8crop,2);
-tagstruct.Photometric = Tiff.Photometric.LinearRaw;
-tagstruct.SampleFormat = 3; %'IEEEFP'
-tagstruct.BitsPerSample = 64;
-tagstruct.SamplesPerPixel = 1;
-tagstruct.RowsPerStrip = 16;
-tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
-tagstruct.Software = 'MATLAB';
+geotiffwrite([folderpath 'LC80160302013262LGN00SMmap.tif'], SMmap, R,  ...
+       'GeoKeyDirectoryTag', info.GeoTIFFTags.GeoKeyDirectoryTag);
 
-t1.setTag(tagstruct)
-t1.write(CHLmap)
-t1.close();
+geotiffwrite([folderpath 'LC80160302013262LGN00CDmap.tif'], CHLmap, R,  ...
+       'GeoKeyDirectoryTag', info.GeoTIFFTags.GeoKeyDirectoryTag);
+% %% Save maps as TIFF
+% 
+% t1 = Tiff('LC80160302013262LGN00CHLmap.tif','w');
+% t2 = Tiff('LC80160302013262LGN00SMmap.tif','w');
+% t3 = Tiff('LC80160302013262LGN00CDOMmap.tif','w');
+% 
+% tagstruct.ImageLength = size(imL8crop,1);
+% tagstruct.ImageWidth = size(imL8crop,2);
+% tagstruct.Photometric = Tiff.Photometric.LinearRaw;
+% tagstruct.SampleFormat = 3; %'IEEEFP'
+% tagstruct.BitsPerSample = 64;
+% tagstruct.SamplesPerPixel = 1;
+% tagstruct.RowsPerStrip = 16;
+% tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
+% tagstruct.Software = 'MATLAB';
+% 
+% CHLmap(CHLmap==0) = NaN;
+% SMmap(SMmap==0) = NaN;
+% CDOMmap(CHLmap==0) = NaN;
+% 
+% t1.setTag(tagstruct)
+% t1.write(CHLmap)
+% t1.close();
+% 
+% t2.setTag(tagstruct)
+% t2.write(SMmap)
+% t2.close();
+% 
+% t3.setTag(tagstruct)
+% t3.write(CDOMmap)
+% t3.close();
+% 
+% % imagesc(imread('LC80160302013262LGN00CHLmap.tif'));
+% % axis equal
 
-t2.setTag(tagstruct)
-t2.write(SMmap)
-t2.close();
 
-t3.setTag(tagstruct)
-t3.write(CDOMmap)
-t3.close();
 
-% imagesc(imread('LC80160302013262LGN00CHLmap.tif'));
-% axis equal
 
 %% Histogram of concentrations log scale
 nbins = 50;

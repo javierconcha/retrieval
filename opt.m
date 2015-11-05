@@ -53,8 +53,8 @@ parfor i = 1:size(Ytest,1)
     x0=LUTconc(index,:);
 
     % Select from the LUT with same input. From ponds OR lake inputs
-    cond1 = LUTconcInput == LUTconcInput(index);
-    cond2 = LUTconcDPF == LUTconcDPF(index);
+    cond1 = LUTconcInput == LUTconcInput(index); %fix pond or lake
+    cond2 = LUTconcDPF == LUTconcDPF(index); % fix phase function
     cond3 =  cond1&cond2;
     
     IMatrix(i) = index; % index in the LUT

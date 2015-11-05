@@ -8,7 +8,7 @@ ODfilt = Particles_curve(:,2)-Particles_curve(Particles_curve(:,1)==800,2); % di
 % ODfilt = Particles_curve(:,2);
 % ODfilt = smooth(ODfilt);
 
-ODsusp = 0.378*ODfilt + 0.523*ODfilt.^2; % scattering correction
+ODsusp = 0.378*ODfilt + 0.523*ODfilt.^2; % scattering correction from Cleveland, 1993 
 
 Ap_pigm = AfterMeth_curve(:,2)-AfterMeth_curve(AfterMeth_curve(:,1)==800,2); % after pigment extraction w/o biass
 % Ap_pigm = AfterMeth_curve(:,2);

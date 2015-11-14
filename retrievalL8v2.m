@@ -618,6 +618,7 @@ disp('Running Optimization Routine')
 disp('Optimization Routine finished Successfully')
 
 save LSQNONLIN_results.mat XResultsOpt residualOpt IMatrixOpt
+%%
 load LSQNONLIN_results.mat
 
 XResults = XResultsOpt;
@@ -631,11 +632,11 @@ DPFRet = LUTDPFused(IMatrix);
 ConcRet = nan(size(masknew,1),5);
 ConcRet(masknew==1,:) = [XResults InputRet DPFRet]; % Concentration Retrieved
 
-CHLmap  = reshape(ConcRet(:,1),...
+CHmap  = reshape(ConcRet(:,1),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
 SMmap   = reshape(ConcRet(:,2),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
-CDOMmap = reshape(ConcRet(:,3),...
+CDmap = reshape(ConcRet(:,3),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
 
 INPUTmap = reshape(ConcRet(:,4),...
@@ -644,17 +645,17 @@ INPUTmap = reshape(ConcRet(:,4),...
 DPFmap = reshape(ConcRet(:,5),...
     [size(imL8cropmask,1) size(imL8cropmask,2) size(imL8cropmask,3)]);
 
-CHLmaplog10 = log10(CHLmap);
-CHLmaplog10(CHLmaplog10==-Inf)=-4;
-% CHLmaplog10masked = bsxfun(@times, CHLmaplog10, landmask);
+CHmaplog10 = log10(CHmap);
+CHmaplog10(CHmaplog10==-Inf)=-4;
+% CHmaplog10masked = bsxfun(@times, CHmaplog10, landmask);
 
 SMmaplog10 = log10(SMmap);
 SMmaplog10(SMmaplog10==-Inf)=-4;
 % SMmaplog10masked = bsxfun(@times, SMmaplog10, landmask);
 
-CDOMmaplog10 = log10(CDOMmap);
-CDOMmaplog10(CDOMmaplog10==-Inf)=-4;
-% CDOMmaplog10masked = bsxfun(@times, CDOMmaplog10, landmask);
+CDmaplog10 = log10(CDmap);
+CDmaplog10(CDmaplog10==-Inf)=-4;
+% CDmaplog10masked = bsxfun(@times, CDmaplog10, landmask);
 
 %% Read ROIs from ENVI text Stat file 
 
@@ -907,7 +908,7 @@ axis image
 axis off
 
 subplot(3,2,2)
-imagesc(CHLmap)
+imagesc(CHmap)
 % caxis([min(XResults(:,1)) max(XResults(:,1))])
 title('<CHL>, [\mug/L] ','fontsize',fs)
 set(gca,'fontsize',fs)
@@ -929,7 +930,7 @@ axis image
 axis off
 
 subplot(3,2,4)
-imagesc(CDOMmap)
+imagesc(CDmap)
 % caxis([min(XResults(:,3)) max(XResults(:,3))])
 title('a_{CDOM}(440nm), [1/m] ','fontsize',fs)
 set(gca,'fontsize',fs)
@@ -979,7 +980,7 @@ figure('name',date)
 fs = 16;
 ms = 16;
 set(gcf,'color','white')
-imagesc(CHLmap)
+imagesc(CHmap)
 set(gca,'fontsize',fs)
 axis equal
 axis image
@@ -1009,7 +1010,7 @@ xlabel('measured C_a [mg m^{-3}] ','fontsize',fs)
 ylabel('L8 retrieved C_a [mg m^{-3}]','fontsize',fs)
 legend('LongS','Cranb','OntOS','OntNS','Location','best')
 
-% save('CHL.txt','-ascii','-double','-tabs','CHLmap')
+% save('CHL.txt','-ascii','-double','-tabs','CHmap')
 %% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure('name',date)
 fs = 16;
@@ -1050,7 +1051,7 @@ figure('name',date)
 fs = 16;
 ms = 16;
 set(gcf,'color','white')
-imagesc(CDOMmap)
+imagesc(CDmap)
 set(gca,'fontsize',fs)
 axis equal
 axis image
@@ -1079,7 +1080,7 @@ xlim([0 maxconcCDOM])
 xlabel('measured a_{CDOM}(440nm) [1/m]','fontsize',fs)
 ylabel('retrieved a_{CDOM}(440nm) [1/m]','fontsize',fs)
 legend('LongS','Cranb','OntOS','OntNS','Location','best')
-% save('CDOM.txt','-ascii','-double','-tabs','CDOMmap')
+% save('CDOM.txt','-ascii','-double','-tabs','CDmap')
 %% Plot Input (ONTNS or LONGS) and DPFs retrieved
 figure
 subplot(1,2,1)
@@ -1104,12 +1105,89 @@ axis off
 h = colorbar;
 set(h,'fontsize',cbfs)
 
+%% DISSERTACION FIGURES -- log10 scale
+% define mask
+mask = logical(imL8cropmask);
+gray = cat(3,   0.5*ones(size(CDmaplog10)), ...
+                0.5*ones(size(CDmaplog10)),...
+                0.5*ones(size(CDmaplog10)));
+
+
+%% CHL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(CHmaplog10); % display Map imaage second
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .1 .6 .05])
+title(h,'L8 retrieved C_a [mg m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.1 1 1])
+y = get(h,'XTick');
+x = 10.^y;
+set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
+
+%% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(SMmaplog10); % display Map imaage second
+set(h0, 'AlphaData', mask) % Apply transparency to the mas
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .13 .6 .05])
+title(h,'L8 retrieved TSS [g m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 .1 1 1])
+y = get(h,'XTick')
+x = [1 3 10 30];
+set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
+
+%% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(CDmaplog10); % display Map imaage second
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .07 .6 .05])
+title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
+y = get(h,'XTick') % values in x from 10^x
+x = [0.1 0.3 1 3.0];
+set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
+
 %% Mapping Concentrations log scale
 
 figure
 fs = 15;
 set(gcf,'color','white')
-imagesc(CHLmaplog10)
+imagesc(CHmaplog10)
 title('CHL map log scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
@@ -1127,7 +1205,7 @@ colorbar
 figure
 fs = 15;
 set(gcf,'color','white')
-imagesc(CDOMmaplog10)
+imagesc(CDmaplog10)
 title('CDOM map log scale','fontsize',fs)
 set(gca,'fontsize',fs)
 axis('equal')
@@ -1138,19 +1216,19 @@ filepath = [folderpath filename];
 [~, R] = geotiffread(filepath);
 info = geotiffinfo(filepath);
 
-geotiffwrite([folderpath 'LC80160302013262LGN00CHmap.tif'], CHLmap, R,  ...
+geotiffwrite([folderpath 'LC80160302013262LGN00CHmap.tif'], CHmap, R,  ...
        'GeoKeyDirectoryTag', info.GeoTIFFTags.GeoKeyDirectoryTag);
 
 geotiffwrite([folderpath 'LC80160302013262LGN00SMmap.tif'], SMmap, R,  ...
        'GeoKeyDirectoryTag', info.GeoTIFFTags.GeoKeyDirectoryTag);
 
-geotiffwrite([folderpath 'LC80160302013262LGN00CDmap.tif'], CHLmap, R,  ...
+geotiffwrite([folderpath 'LC80160302013262LGN00CDmap.tif'], CHmap, R,  ...
        'GeoKeyDirectoryTag', info.GeoTIFFTags.GeoKeyDirectoryTag);
 % %% Save maps as TIFF
 % 
-% t1 = Tiff('LC80160302013262LGN00CHLmap.tif','w');
+% t1 = Tiff('LC80160302013262LGN00CHmap.tif','w');
 % t2 = Tiff('LC80160302013262LGN00SMmap.tif','w');
-% t3 = Tiff('LC80160302013262LGN00CDOMmap.tif','w');
+% t3 = Tiff('LC80160302013262LGN00CDmap.tif','w');
 % 
 % tagstruct.ImageLength = size(imL8crop,1);
 % tagstruct.ImageWidth = size(imL8crop,2);
@@ -1162,12 +1240,12 @@ geotiffwrite([folderpath 'LC80160302013262LGN00CDmap.tif'], CHLmap, R,  ...
 % tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
 % tagstruct.Software = 'MATLAB';
 % 
-% CHLmap(CHLmap==0) = NaN;
+% CHmap(CHmap==0) = NaN;
 % SMmap(SMmap==0) = NaN;
-% CDOMmap(CHLmap==0) = NaN;
+% CDmap(CHmap==0) = NaN;
 % 
 % t1.setTag(tagstruct)
-% t1.write(CHLmap)
+% t1.write(CHmap)
 % t1.close();
 % 
 % t2.setTag(tagstruct)
@@ -1175,10 +1253,10 @@ geotiffwrite([folderpath 'LC80160302013262LGN00CDmap.tif'], CHLmap, R,  ...
 % t2.close();
 % 
 % t3.setTag(tagstruct)
-% t3.write(CDOMmap)
+% t3.write(CDmap)
 % t3.close();
 % 
-% % imagesc(imread('LC80160302013262LGN00CHLmap.tif'));
+% % imagesc(imread('LC80160302013262LGN00CHmap.tif'));
 % % axis equal
 
 
@@ -1190,7 +1268,7 @@ figure
 subplot(1,3,1)
 fs = 15;
 set(gcf,'color','white')
-hist(CHLmaplog10(CHLmaplog10~=-Inf),nbins)
+hist(CHmaplog10(CHmaplog10~=-Inf),nbins)
 title('CHL','fontsize',fs)
 set(gca,'fontsize',fs)
 
@@ -1204,7 +1282,7 @@ set(gca,'fontsize',fs)
 subplot(1,3,3)
 fs = 15;
 set(gcf,'color','white')
-hist(CDOMmaplog10(CDOMmaplog10~=-Inf),nbins)
+hist(CDmaplog10(CDmaplog10~=-Inf),nbins)
 title('CDOM','fontsize',fs)
 set(gca,'fontsize',fs)
 %% Histogram of concentrations linear scale
@@ -1245,7 +1323,7 @@ axis equal
 axis off
 
 subplot(2,2,2)
-imagesc(CHLmaplog10)
+imagesc(CHmaplog10)
 title('CHL map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar
@@ -1261,7 +1339,7 @@ axis equal
 axis off
 
 subplot(2,2,4)
-imagesc(CDOMmaplog10)
+imagesc(CDmaplog10)
 title('CDOM map ','fontsize',fs)
 set(gca,'fontsize',fs)
 colorbar

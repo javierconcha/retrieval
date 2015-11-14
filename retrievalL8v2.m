@@ -1155,9 +1155,11 @@ set(h,'Position',[.2 .13 .6 .05])
 title(h,'L8 retrieved TSS [g m^{-3}]','FontSize',fs)
 set(gca, 'Units', 'normalized', 'Position', [0 .1 1 1])
 y = get(h,'XTick')
-x = [1 3 10 30];
+[xmin,xmax] = caxis;
+x = [1 3 10 30 10^(xmax)];
 set(h,'XTick',log10(x));
 set(h,'XTickLabel',x)
+
 
 %% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure('name',date)
@@ -1178,7 +1180,8 @@ set(h,'Position',[.2 .07 .6 .05])
 title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
 set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
 y = get(h,'XTick') % values in x from 10^x
-x = [0.1 0.3 1 3.0];
+[xmin,xmax] = caxis;
+x = [10^xmin 0.3 1 3.0];
 set(h,'XTick',log10(x));
 set(h,'XTickLabel',x)
 

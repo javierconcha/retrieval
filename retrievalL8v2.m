@@ -656,7 +656,88 @@ SMmaplog10(SMmaplog10==-Inf)=-4;
 CDmaplog10 = log10(CDmap);
 CDmaplog10(CDmaplog10==-Inf)=-4;
 % CDmaplog10masked = bsxfun(@times, CDmaplog10, landmask);
+%% DISSERTACION FIGURES -- log10 scale
+% define mask
+mask = logical(imL8cropmask);
+gray = cat(3,   0.7*ones(size(CDmaplog10)), ...
+                0.7*ones(size(CDmaplog10)),...
+                0.7*ones(size(CDmaplog10)));
 
+
+%% CHL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(CHmaplog10); % display Map imaage second
+set(gca, 'CLim', [min(CHmaplog10(:)), max(CHmaplog10(:))]);
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .1 .6 .05])
+title(h,'L8 retrieved C_a [mg m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.1 1 1])
+y = get(h,'XTick');
+x = 10.^y;
+set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
+
+%% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(SMmaplog10); % display Map imaage second
+set(gca, 'CLim', [min(SMmaplog10(:)), max(SMmaplog10(:))]);
+set(h0, 'AlphaData', mask) % Apply transparency to the mas
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .13 .6 .05])
+title(h,'L8 retrieved TSS [g m^{-3}]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 .1 1 1])
+y = get(h,'XTick')
+[xmin,xmax] = caxis;
+x = [1 3 10 30 10^(xmax)];
+set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
+
+
+%% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(CDmaplog10); % display Map imaage second
+set(gca, 'CLim', [min(CDmaplog10(:)), max(CDmaplog10(:))]);
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .07 .6 .05])
+title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
+y = get(h,'XTick') % values in x from 10^x
+[xmin,xmax] = caxis;
+x = [10^xmin 0.3 1 3.0];
+set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
 %% Read ROIs from ENVI text Stat file 
 
 pathname = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/InputOutput/130919/';
@@ -1104,86 +1185,6 @@ axis image
 axis off
 h = colorbar;
 set(h,'fontsize',cbfs)
-
-%% DISSERTACION FIGURES -- log10 scale
-% define mask
-mask = logical(imL8cropmask);
-gray = cat(3,   0.5*ones(size(CDmaplog10)), ...
-                0.5*ones(size(CDmaplog10)),...
-                0.5*ones(size(CDmaplog10)));
-
-
-%% CHL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure('name',date)
-fs = 16;
-ms = 16;
-set(gcf,'color','white')
-imagesc(gray); % display color of the mask first
-hold on
-h0 = imagesc(CHmaplog10); % display Map imaage second
-set(h0, 'AlphaData', mask) % Apply transparency to the mask
-set(gca,'fontsize',fs)
-axis equal
-axis image
-axis off
-h = colorbar;
-set(h,'fontsize',fs,'Location','southoutside')
-set(h,'Position',[.2 .1 .6 .05])
-title(h,'L8 retrieved C_a [mg m^{-3}]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 0.1 1 1])
-y = get(h,'XTick');
-x = 10.^y;
-set(h,'XTick',log10(x));
-set(h,'XTickLabel',x)
-
-%% SM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure('name',date)
-fs = 16;
-ms = 16;
-set(gcf,'color','white')
-imagesc(gray); % display color of the mask first
-hold on
-h0 = imagesc(SMmaplog10); % display Map imaage second
-set(h0, 'AlphaData', mask) % Apply transparency to the mas
-set(gca,'fontsize',fs)
-axis equal
-axis image
-axis off
-h = colorbar;
-set(h,'fontsize',fs,'Location','southoutside')
-set(h,'Position',[.2 .13 .6 .05])
-title(h,'L8 retrieved TSS [g m^{-3}]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 .1 1 1])
-y = get(h,'XTick')
-[xmin,xmax] = caxis;
-x = [1 3 10 30 10^(xmax)];
-set(h,'XTick',log10(x));
-set(h,'XTickLabel',x)
-
-
-%% CDOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure('name',date)
-fs = 16;
-ms = 16;
-set(gcf,'color','white')
-imagesc(gray); % display color of the mask first
-hold on
-h0 = imagesc(CDmaplog10); % display Map imaage second
-set(h0, 'AlphaData', mask) % Apply transparency to the mask
-set(gca,'fontsize',fs)
-axis equal
-axis image
-axis off
-h = colorbar;
-set(h,'fontsize',fs,'Location','southoutside')
-set(h,'Position',[.2 .07 .6 .05])
-title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
-set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
-y = get(h,'XTick') % values in x from 10^x
-[xmin,xmax] = caxis;
-x = [10^xmin 0.3 1 3.0];
-set(h,'XTick',log10(x));
-set(h,'XTickLabel',x)
 
 %% Mapping Concentrations log scale
 

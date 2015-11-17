@@ -659,11 +659,23 @@ CDmaplog10(CDmaplog10==-Inf)=-4;
 %% DISSERTACION FIGURES -- log10 scale
 % define mask
 mask = logical(imL8cropmask);
-gray = cat(3,   0.7*ones(size(CDmaplog10)), ...
-                0.7*ones(size(CDmaplog10)),...
-                0.7*ones(size(CDmaplog10)));
-
-
+gray = cat(3,   0.7*ones(size(imL8cropmask)), ...
+                0.7*ones(size(imL8cropmask)),...
+                0.7*ones(size(imL8cropmask)));
+%% ROI RGB image
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(impos); % display Map imaage second
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+set(gca, 'Units', 'normalized', 'Position', [0 0.1 1 1])
 %% CHL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure('name',date)
 fs = 16;
@@ -735,7 +747,7 @@ title(h,'L8 retrieved a_{CDOM}(440nm) [1/m]','FontSize',fs)
 set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
 y = get(h,'XTick') % values in x from 10^x
 [xmin,xmax] = caxis;
-x = [10^xmin 0.3 1 3.0];
+x = [10^xmin 0.2 0.6 10^xmax];
 set(h,'XTick',log10(x));
 set(h,'XTickLabel',x)
 %% Read ROIs from ENVI text Stat file 

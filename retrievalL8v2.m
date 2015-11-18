@@ -669,7 +669,7 @@ ms = 16;
 set(gcf,'color','white')
 imagesc(gray); % display color of the mask first
 hold on
-h0 = imagesc(impos); % display Map imaage second
+h0 = imagesc(RGBdisplay); % display Map image second. From PaperPlots.m
 set(h0, 'AlphaData', mask) % Apply transparency to the mask
 set(gca,'fontsize',fs)
 axis equal
@@ -749,6 +749,53 @@ y = get(h,'XTick') % values in x from 10^x
 [xmin,xmax] = caxis;
 x = [10^xmin 0.2 0.6 10^xmax];
 set(h,'XTick',log10(x));
+set(h,'XTickLabel',x)
+%% Plot Input (ONTNS or LONGS) and DPFs retrieved
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(INPUTmap); % display Map imaage second
+set(gca, 'CLim', [min(INPUTmap(:)), max(INPUTmap(:))]);
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .09 .6 .05])
+title(h,'IOP input','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
+[xmin,xmax] = caxis;
+x = [xmin xmax];
+set(h,'XTick',x);
+set(h,'XTickLabel',{'Lake','Pond'})
+
+figure('name',date)
+fs = 16;
+ms = 16;
+set(gcf,'color','white')
+imagesc(gray); % display color of the mask first
+hold on
+h0 = imagesc(DPFmap); % display Map imaage second
+set(gca, 'CLim', [min(DPFmap(:)), max(DPFmap(:))]);
+set(h0, 'AlphaData', mask) % Apply transparency to the mask
+set(gca,'fontsize',fs)
+axis equal
+axis image
+axis off
+h = colorbar;
+set(h,'fontsize',fs,'Location','southoutside')
+set(h,'Position',[.2 .09 .6 .05])
+title(h,'Backscatter fraction [%]','FontSize',fs)
+set(gca, 'Units', 'normalized', 'Position', [0 0.05 1 1])
+[xmin,xmax] = caxis;
+x = unique(DPFmap(~isnan(DPFmap(:))));
+x = [0.3 0.6 1.0 1.4 2.0];
+set(h,'XTick',x);
 set(h,'XTickLabel',x)
 %% Read ROIs from ENVI text Stat file 
 

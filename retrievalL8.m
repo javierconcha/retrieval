@@ -1345,11 +1345,11 @@ SNRL8 = [
 111];
 
 figure
-fs = 15;
+fs = 18;
 set(gcf,'color','white')
-plot(L8bands*1000,SNRL8Ltyp,'-bx')
-hold on
 plot(L8bands*1000,SNRL8,'-ro')
+hold on
+plot(L8bands*1000,SNRL8Ltyp,'-bx')
 plot(L8bands(2:end)*1000,SNRL7Ltyp,'-kv')
 % plot(L8bands(1:5)*1000,ROIcranELM,'--bx')
 % plot(L8bands(1:5)*1000,ROIlonELMbased,'-ro')
@@ -1363,6 +1363,6 @@ plot(L8bands(2:end)*1000,SNRL7Ltyp,'-kv')
 % title('Off shore lake','fontsize',fs)
 xlabel('wavelength [nm]','fontsize',fs)
 ylabel('SNR','fontsize',fs)
-legend('L8 SNR at L typical','L8 SNR','L7 SNR')
+legend('L8 SNR Calculated','L8 SNR design specs','L7 SNR design specs')
 set(gca,'fontsize',fs)
 

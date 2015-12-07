@@ -1347,10 +1347,10 @@ SNRL8 = [
 figure
 fs = 18;
 set(gcf,'color','white')
-plot(L8bands*1000,SNRL8,'-ro')
+plot(L8bands*1000,SNRL8,'-ro','Linewidth',1.5)
 hold on
-plot(L8bands*1000,SNRL8Ltyp,'-bx')
-plot(L8bands(2:end)*1000,SNRL7Ltyp,'-kv')
+plot(L8bands*1000,SNRL8Ltyp,'-bx','Linewidth',1.5)
+plot(L8bands(2:end)*1000,SNRL7Ltyp,'-kv','Linewidth',1.5)
 % plot(L8bands(1:5)*1000,ROIcranELM,'--bx')
 % plot(L8bands(1:5)*1000,ROIlonELMbased,'-ro')
 % plot(L8bands(1:5)*1000,ROIlonELM,'--ro')

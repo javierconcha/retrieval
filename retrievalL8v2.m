@@ -6,8 +6,10 @@ cd /Users/javier/Desktop/Javier/PHD_RIT/LDCM/retrieval/
 %% L8 image cropped
 % 03/17/14 ELM with two dark from HL and better mask for bright pixel
 folderpath = '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/';
-filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
+% filename = 'LC80160302013262LGN00_ONelm140317bigger500tif.tif';
 % filename = 'LC80160302013262LGN00_ONelm140629.tif'; % corrected with Rrs
+filename = 'LC80160302013262LGN00_ONelm151215bigger480.tif';
+
 filepath = [folderpath filename];
 
 date = '130919';
@@ -23,8 +25,13 @@ imL8crop = imL8crop./pi; % in Rrs
 %%%% Mask
 % imL8cropmask = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80170302013237LGN00/LC80170302013237LGN00_ONmaskmin0p5resampled.tif');
+
+% imL8cropmask = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
+
+
 imL8cropmask = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00_ONelm131126testWaterMask2.tif');
+    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00_ONelm151215_WaterMask.tif');
 
 % imL8cropmask = imread(...
 %     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/ENVI/LC80160302013262LGN00_LandAndBottomMaSK.tif');
@@ -46,13 +53,13 @@ waterpixels = double(waterpixels);
 
 % added 01-11-14. plot radiance curves
 % radiance image
-imL8radcrop = imread(...
-    '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00rad_ONelm.tif');
+% imL8radcrop = imread(...
+%     '/Users/javier/Desktop/Javier/PHD_RIT/LDCM/L8images/LC80160302013262LGN00/MOBELM/LC80160302013262LGN00rad_ONelm.tif');
+% 
+% imradnew = reshape(imL8radcrop,[size(imL8radcrop,1)*size(imL8radcrop,2) size(imL8radcrop,3)]);
 
-imradnew = reshape(imL8radcrop,[size(imL8radcrop,1)*size(imL8radcrop,2) size(imL8radcrop,3)]);
-
-waterradpixels = imradnew(masknew==1,:);
-waterradpixels = double(waterradpixels);
+% waterradpixels = imradnew(masknew==1,:);
+% waterradpixels = double(waterradpixels);
 % for displaying
 imL8cropRGB(:,:,1)=imadjust(imL8crop(:,:,4));
 imL8cropRGB(:,:,2)=imadjust(imL8crop(:,:,3));
@@ -810,19 +817,22 @@ idx1 = find(~cellfun('isempty',strfind(s{1},'Column')));
 data = s{1}(idx1(end)+1:size(s{1},1));
 
 fclose(fid);
-statdata = zeros(size(data,1),size(idx1,1));
+
+clear statdata
+
 for index = 1:size(data,1)
     statdata(index,:) = str2num(cell2mat(data(index)));
 end
 % Extract data
 L8bands_ENVI = statdata(:,1)';
 
-Cranb = statdata(:,2)'; Cranb(isnan(Cranb(:)))=0;
-LongN = statdata(:,3)'; LongN(isnan(LongN(:)))=0;
 LongS = statdata(:,4)'; LongS(isnan(LongS(:)))=0;
-OntNS = statdata(:,5)'; OntNS(isnan(OntNS(:)))=0;
-OntEx = statdata(:,6)'; OntEx(isnan(OntEx(:)))=0;
+Cranb = statdata(:,2)'; Cranb(isnan(Cranb(:)))=0;
 OntOS = statdata(:,7)'; OntOS(isnan(OntOS(:)))=0;
+OntNS = statdata(:,5)'; OntNS(isnan(OntNS(:)))=0;
+
+LongN = statdata(:,3)'; LongN(isnan(LongN(:)))=0;
+OntEx = statdata(:,6)'; OntEx(isnan(OntEx(:)))=0;
 Bradd = statdata(:,6)'; Bradd(isnan(Bradd(:)))=0;
 
 % LongS = [0.009494 0.014197 0.032298 0.020612 0.009200 0.000870 0.000533];
@@ -886,7 +896,7 @@ rule6 = LUTInputused==2 &...
     LUTconcused(:,1)==60 & LUTconcused(:,2)==25 &...
     LUTconcused(:,3)==1.00;
 
-% find LongS in waterpixels with index I
+% find CRANB in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*Cranb).^2,2)));
 
 LUTInputused(IMatrix(I))
@@ -910,12 +920,13 @@ ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
+
 %% Find OntOS
 rule6 = LUTInputused==1 &...
     LUTconcused(:,1)==1.0 & LUTconcused(:,2)==1.0 &...
     LUTconcused(:,3)==0.21;      
 
-% find LongS in waterpixels with index I
+% find ONTOS in waterpixels with index I
 [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntOS).^2,2)));
 
 LUTInputused(IMatrix(I))
@@ -944,7 +955,7 @@ rule6 = LUTInputused==1 &...
     LUTconcused(:,1)==0.5 & LUTconcused(:,2)==2.0 &...
     LUTconcused(:,3)==0.11;
 
-% find LongS in waterpixels with index I
+% find ONTNS in waterpixels with index I
 [~,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*OntNS).^2,2)));
 
 LUTInputused(IMatrix(I))
@@ -968,6 +979,38 @@ ylabel('R_{rs} [1/sr]','fontsize',fs)
 set(gca,'fontsize',fs)
 legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
+
+
+%% Find LONGS
+% rule6 = LUTInputused==2 &...
+%     LUTconcused(:,1)==110 & LUTconcused(:,2)==50 &...
+%     LUTconcused(:,3)==1.2;
+% 
+% % find LongS in waterpixels with index I
+% [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongS).^2,2)));
+% 
+% LUTInputused(IMatrix(I))
+% LUTDPFused(IMatrix(I))
+% LUTconcused(IMatrix(I),:)
+% 
+% LongSconc130919 = [112.76 46 1.1953]
+% LongSconc130919ret = XResults(I,:)
+% 
+% figure 
+% fs = 15;
+% set(gcf,'color','white')
+% plot(L8bands,LongS,'.-g')
+% hold on
+% plot(L8bands,waterpixels(I,:),'.-r')
+% plot(L8bands,LUTused(IMatrix(I),:),'.-b')
+% plot(L8bands,LUTused(rule6,:)','k')
+% title('LongS','fontsize',fs)
+% xlabel('wavelength [\mu m]','fontsize',fs)
+% ylabel('R_{rs} [1/sr]','fontsize',fs)
+% set(gca,'fontsize',fs)
+% legend('Field','Rrs','ret. from HL','DPF LUT')
+% grid on
+
 %% Scatter plot
 
 fs = 30;

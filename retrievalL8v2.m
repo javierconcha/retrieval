@@ -981,35 +981,35 @@ legend('Field','Rrs','ret. from HL','DPF LUT')
 grid on
 
 
-%% Find LONGS
-% rule6 = LUTInputused==2 &...
-%     LUTconcused(:,1)==110 & LUTconcused(:,2)==50 &...
-%     LUTconcused(:,3)==1.2;
-% 
-% % find LongS in waterpixels with index I
-% [Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongS).^2,2)));
-% 
-% LUTInputused(IMatrix(I))
-% LUTDPFused(IMatrix(I))
-% LUTconcused(IMatrix(I),:)
-% 
-% LongSconc130919 = [112.76 46 1.1953]
-% LongSconc130919ret = XResults(I,:)
-% 
-% figure 
-% fs = 15;
-% set(gcf,'color','white')
-% plot(L8bands,LongS,'.-g')
-% hold on
-% plot(L8bands,waterpixels(I,:),'.-r')
-% plot(L8bands,LUTused(IMatrix(I),:),'.-b')
-% plot(L8bands,LUTused(rule6,:)','k')
-% title('LongS','fontsize',fs)
-% xlabel('wavelength [\mu m]','fontsize',fs)
-% ylabel('R_{rs} [1/sr]','fontsize',fs)
-% set(gca,'fontsize',fs)
-% legend('Field','Rrs','ret. from HL','DPF LUT')
-% grid on
+% Find LONGN
+rule6 = LUTInputused==2 &...
+    LUTconcused(:,1)==110 & LUTconcused(:,2)==50 &...
+    LUTconcused(:,3)==1.2;
+
+% find LongN in waterpixels with index I
+[Y,I] = min(sqrt(mean((waterpixels-ones(size(waterpixels,1),1)*LongN).^2,2)));
+
+LUTInputused(IMatrix(I))
+LUTDPFused(IMatrix(I))
+LUTconcused(IMatrix(I),:)
+
+LongNconc130919 = [112.76 46 1.1953]
+LongNconc130919ret = XResults(I,:)
+
+figure 
+fs = 15;
+set(gcf,'color','white')
+plot(L8bands,LongN,'.-g')
+hold on
+plot(L8bands,waterpixels(I,:),'.-r')
+plot(L8bands,LUTused(IMatrix(I),:),'.-b')
+plot(L8bands,LUTused(rule6,:)','k')
+title('LongN','fontsize',fs)
+xlabel('wavelength [\mu m]','fontsize',fs)
+ylabel('R_{rs} [1/sr]','fontsize',fs)
+set(gca,'fontsize',fs)
+legend('Field','Rrs','ret. from HL','DPF LUT')
+grid on
 
 %% Scatter plot
 
